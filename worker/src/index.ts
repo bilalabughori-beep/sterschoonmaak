@@ -45,6 +45,7 @@ const worker = {
       } catch (error) { return handleError(error, request, env); }
     }
     if (url.pathname.startsWith("/admin/")) {
+      if (!isAllowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403, request, env);
       try {
         const segments = url.pathname.split("/").filter(Boolean);
         if (request.method === "GET" && segments[1] === "complaints" && !segments[2]) return json(await listComplaints(request, env), 200, request, env);

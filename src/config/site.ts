@@ -11,6 +11,7 @@ type BusinessHours = Record<
 
 export interface SiteConfig {
   brandName: string;
+  siteUrl: string;
   tagline: string;
   location: string;
   serviceRadiusKm: {
@@ -40,6 +41,7 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   brandName: "Ster Schoonmaak",
+  siteUrl: "https://sterschoonmaak.be",
   tagline: "Schoon • Stipt • Betrouwbaar",
   location: "Ghent, Belgium",
   serviceRadiusKm: {

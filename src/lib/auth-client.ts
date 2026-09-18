@@ -6,7 +6,7 @@ export type Session = { access_token: string; refresh_token: string; expires_at:
 
 const storageKey = "ster-schoonmaak-backoffice-session";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "") ?? "";
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
 function readSession(): Session | null {
   try { const raw = window.localStorage.getItem(storageKey); return raw ? JSON.parse(raw) as Session : null; } catch { return null; }
@@ -15,8 +15,8 @@ function writeSession(session: Session | null) { try { if (session) window.local
 function isRole(value: unknown): value is Role { return value === "client_admin" || value === "site_owner"; }
 
 async function authRequest(path: string, init: RequestInit = {}) {
-  if (!supabaseUrl || !anonKey) throw new Error("Supabase Auth is not configured.");
-  const response = await fetch(`${supabaseUrl}/auth/v1/${path}`, { ...init, headers: { apikey: anonKey, "content-type": "application/json", ...(init.headers ?? {}) } });
+  if (!supabaseUrl || !publishableKey) throw new Error("Supabase Auth is not configured.");
+  const response = await fetch(`${supabaseUrl}/auth/v1/${path}`, { ...init, headers: { apikey: publishableKey, "content-type": "application/json", ...(init.headers ?? {}) } });
   const body = await response.json().catch(() => null) as { error_description?: string; msg?: string; access_token?: string; refresh_token?: string; expires_in?: number; user?: AuthUser } | null;
   if (!response.ok) throw new Error(body?.error_description ?? body?.msg ?? "Authentication request failed.");
   return body;
@@ -40,7 +40,7 @@ export async function refreshSession(): Promise<Session | null> {
 
 export async function signOut() {
   const session = readSession();
-  if (session && supabaseUrl && anonKey) await fetch(`${supabaseUrl}/auth/v1/logout`, { method: "POST", headers: { apikey: anonKey, authorization: `Bearer ${session.access_token}` } }).catch(() => undefined);
+  if (session && supabaseUrl && publishableKey) await fetch(`${supabaseUrl}/auth/v1/logout`, { method: "POST", headers: { apikey: publishableKey, authorization: `Bearer ${session.access_token}` } }).catch(() => undefined);
   writeSession(null);
 }
 
