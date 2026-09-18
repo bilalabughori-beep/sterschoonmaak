@@ -1,14 +1,16 @@
 "use client";
 
 import { createClient, type Session as SupabaseSession, type User } from "@supabase/supabase-js";
+import { supabasePublicConfig } from "@/config/supabase-public";
 
 export type Role = "client_admin" | "site_owner";
 export type AuthUser = { id: string; email?: string; app_metadata?: { role?: unknown }; user_metadata?: { display_name?: string } };
 export type Session = { access_token: string; refresh_token: string; expires_at: number; user: AuthUser };
 
 const storageKey = "ster-schoonmaak-backoffice-session";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "") ?? "";
-const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+const AUTH_OPERATION_TIMEOUT_MS = 7000;
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? supabasePublicConfig.url).replace(/\/$/, "");
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? supabasePublicConfig.publishableKey;
 let client: ReturnType<typeof createClient> | null = null;
 let callbackPromise: Promise<Session | null> | null = null;
 
@@ -25,6 +27,7 @@ function writeSession(session: Session | null) { try { if (session) window.local
 function isRole(value: unknown): value is Role { return value === "client_admin" || value === "site_owner"; }
 function toAuthUser(user: User): AuthUser { return { id: user.id, email: user.email, app_metadata: user.app_metadata as AuthUser["app_metadata"], user_metadata: user.user_metadata as AuthUser["user_metadata"] }; }
 function toSession(session: SupabaseSession, user = session.user): Session { return { access_token: session.access_token, refresh_token: session.refresh_token, expires_at: (session.expires_at ?? Math.floor(Date.now() / 1000) + session.expires_in) * 1000, user: toAuthUser(user) }; }
+function withTimeout<T>(operation: Promise<T>, message: string): Promise<T> { return new Promise((resolve, reject) => { const timer = window.setTimeout(() => reject(new Error(message)), AUTH_OPERATION_TIMEOUT_MS); operation.then((value) => { window.clearTimeout(timer); resolve(value); }, (error) => { window.clearTimeout(timer); reject(error); }); }); }
 
 function authMessage(value: unknown, fallback = "Authentication failed."): string {
   const message = value instanceof Error ? value.message : String(value ?? "");
@@ -38,9 +41,9 @@ export function friendlyAuthError(value: unknown, fallback = "Authentication fai
 
 async function currentSession(): Promise<Session | null> {
   const auth = getClient().auth;
-  const { data, error } = await auth.getSession();
+  const { data, error } = await withTimeout(auth.getSession(), "Secure session initialization timed out.");
   if (error || !data.session) { writeSession(null); return null; }
-  const userResponse = await auth.getUser();
+  const userResponse = await withTimeout(auth.getUser(), "Secure user verification timed out.");
   if (userResponse.error || !userResponse.data.user) { writeSession(null); return null; }
   const session = toSession(data.session, userResponse.data.user);
   writeSession(session);
@@ -90,10 +93,14 @@ export function hasAuthCallbackUrl() {
 }
 
 function cleanAuthUrl() {
-  const url = new URL(window.location.href);
-  ["code", "token_hash", "type", "error", "error_description", "error_code", "access_token", "refresh_token", "expires_at", "expires_in", "token_type", "provider_token", "provider_refresh_token"].forEach((name) => url.searchParams.delete(name));
-  url.hash = "";
-  window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+  try {
+    const url = new URL(window.location.href);
+    ["code", "token_hash", "type", "error", "error_description", "error_code", "access_token", "refresh_token", "expires_at", "expires_in", "token_type", "provider_token", "provider_refresh_token"].forEach((name) => url.searchParams.delete(name));
+    url.hash = "";
+    window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+  } catch {
+    // URL cleanup must never prevent the reset page from resolving.
+  }
 }
 
 export async function consumeAuthCallback(): Promise<Session | null> {
@@ -107,13 +114,13 @@ export async function consumeAuthCallback(): Promise<Session | null> {
       const auth = getClient().auth;
       if (params.error || params.errorDescription) throw new Error(params.errorDescription ?? params.error ?? "The authentication link is no longer valid.");
       if (params.code) {
-        const { error } = await auth.exchangeCodeForSession(params.code);
+        const { error } = await withTimeout(auth.exchangeCodeForSession(params.code), "Secure callback initialization timed out.");
         if (error) throw error;
       } else if (params.tokenHash) {
-        const { error } = await auth.verifyOtp({ token_hash: params.tokenHash, type: (params.type ?? "recovery") as "invite" | "recovery" });
+        const { error } = await withTimeout(auth.verifyOtp({ token_hash: params.tokenHash, type: (params.type ?? "recovery") as "invite" | "recovery" }), "Secure callback initialization timed out.");
         if (error) throw error;
       } else if (params.accessToken && params.refreshToken) {
-        const { error } = await auth.setSession({ access_token: params.accessToken, refresh_token: params.refreshToken });
+        const { error } = await withTimeout(auth.setSession({ access_token: params.accessToken, refresh_token: params.refreshToken }), "Secure callback initialization timed out.");
         if (error) throw error;
       } else {
         throw new Error("The authentication link is incomplete.");

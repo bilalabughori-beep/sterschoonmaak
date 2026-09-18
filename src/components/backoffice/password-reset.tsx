@@ -25,13 +25,28 @@ function PasswordResetContent({ expectedRole }: { expectedRole: Role }) {
 
   useEffect(() => {
     let active = true;
-    void consumeAuthCallback().then((callbackSession) => refreshSession().then((current) => {
+    let timedOut = false;
+    const timeout = window.setTimeout(() => {
+      timedOut = true;
       if (!active) return;
-      const next = callbackSession ?? current;
-      const role = roleOf(next);
-      if (role && role !== expectedRole) { window.location.replace(role === "site_owner" ? "/owner/reset" : "/backoffice/reset"); return; }
-      setSession(next); setReady(true);
-    })).catch((caught) => { if (active) { setError(friendlyAuthError(caught, t("authLinkInvalid"))); setReady(true); } });
+      setError(t("authLinkInvalid"));
+      setReady(true);
+    }, 8000);
+    void (async () => {
+      try {
+        const callbackSession = await consumeAuthCallback();
+        const current = callbackSession ?? await refreshSession();
+        if (!active || timedOut) return;
+        const role = roleOf(current);
+        if (role && role !== expectedRole) { window.location.replace(role === "site_owner" ? "/owner/reset" : "/backoffice/reset"); return; }
+        setSession(current);
+      } catch (caught) {
+        if (active && !timedOut) setError(friendlyAuthError(caught, t("authLinkInvalid")));
+      } finally {
+        window.clearTimeout(timeout);
+        if (active && !timedOut) setReady(true);
+      }
+    })();
     return () => { active = false; };
   }, [expectedRole, t]);
 
