@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { friendlyAuthError, requestPasswordReset, resetRedirect, signIn, type Role } from "@/lib/auth-client";
+import { friendlyAuthError, requestPasswordReset, resetRedirect, routeForSession, signIn, type Role } from "@/lib/auth-client";
 import { BackofficeLanguageSwitcher } from "@/components/backoffice/backoffice-language-switcher";
 import { BackofficeLocaleProvider, useBackofficeLocale } from "@/lib/backoffice-i18n";
 
@@ -30,7 +30,7 @@ function BackofficeLoginContent({ expectedRole }: { expectedRole: Role }) {
         setMessage(t("passwordResetSent"));
       } else {
         const session = await signIn(email, password);
-        window.location.replace(session.user.app_metadata?.role === "site_owner" ? "/owner" : "/backoffice");
+        window.location.replace(routeForSession(session));
       }
     } catch (caught) { setError(friendlyAuthError(caught, t("requestFailed"))); }
     finally { setBusy(false); setPassword(""); }

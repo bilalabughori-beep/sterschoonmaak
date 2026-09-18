@@ -6,6 +6,7 @@ import { navigationItems, quotePath } from "@/config/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { PublicAuthButton } from "@/components/auth/public-auth-modal";
 
 function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
@@ -65,20 +66,20 @@ export function MobileNav() {
 
   return (
     <div className="lg:hidden">
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-label={open ? t("closeMenu") : t("openMenu")}
-        aria-expanded={open}
-        aria-controls="mobile-navigation"
-        onClick={() => setOpen((current) => !current)}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border text-navy transition-colors hover:bg-surface-muted"
-      >
-        <span className="sr-only">{open ? t("closeMenu") : t("openMenu")}</span>
-        <span aria-hidden="true" className="text-xl leading-none">
-          {open ? "×" : "☰"}
-        </span>
-      </button>
+      <div className="flex items-center gap-2"><PublicAuthButton /><button
+          ref={triggerRef}
+          type="button"
+          aria-label={open ? t("closeMenu") : t("openMenu")}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
+          onClick={() => setOpen((current) => !current)}
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border text-navy transition-colors hover:bg-surface-muted"
+        >
+          <span className="sr-only">{open ? t("closeMenu") : t("openMenu")}</span>
+          <span aria-hidden="true" className="text-xl leading-none">
+            {open ? "×" : "☰"}
+          </span>
+        </button></div>
 
       {open ? (
         <div

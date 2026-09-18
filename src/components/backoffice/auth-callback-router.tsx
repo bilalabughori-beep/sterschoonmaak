@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { consumeAuthCallback, hasAuthCallbackUrl, roleOf } from "@/lib/auth-client";
+import { consumeAuthCallback, hasAuthCallbackUrl, isRecoveryCallbackUrl, roleOf } from "@/lib/auth-client";
 
-function resetPath(role: "client_admin" | "site_owner") { return role === "site_owner" ? "/owner/reset" : "/backoffice/reset"; }
+function callbackPath(recovery: boolean, role: "client_admin" | "site_owner" | null) {
+  if (recovery) return role === "site_owner" ? "/owner/reset" : role === "client_admin" ? "/backoffice/reset" : "/account/reset";
+  return role === "site_owner" ? "/owner" : role === "client_admin" ? "/backoffice" : "/account";
+}
 
 export function AuthCallbackRouter() {
   const [processing, setProcessing] = useState(true);
@@ -14,10 +17,10 @@ export function AuthCallbackRouter() {
       const timer = window.setTimeout(() => { if (active) setProcessing(false); }, 0);
       return () => { active = false; window.clearTimeout(timer); };
     }
+    const recovery = isRecoveryCallbackUrl();
     void consumeAuthCallback().then((session) => {
       const role = roleOf(session);
-      if (!role) return;
-      const target = resetPath(role);
+      const target = callbackPath(recovery, role);
       if (window.location.pathname !== target) window.location.replace(target);
     }).catch(() => undefined).finally(() => {
       if (active) setProcessing(false);

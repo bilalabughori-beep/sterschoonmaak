@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { DesktopNav } from "@/components/layout/desktop-nav";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { PublicAuthButton } from "@/components/auth/public-auth-modal";
 
 export async function SiteHeader() {
   const t = await getTranslations("navigation");
@@ -19,6 +20,7 @@ export async function SiteHeader() {
         <DesktopNav />
         <div className="hidden items-center gap-3 lg:flex">
           <LanguageSwitcher />
+          <PublicAuthButton />
           <ButtonLink href={quotePath} size="sm">
             {t("quote")}
           </ButtonLink>

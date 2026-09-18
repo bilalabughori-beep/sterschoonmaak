@@ -4,7 +4,7 @@ import { createClient, type Session as SupabaseSession, type User } from "@supab
 import { supabasePublicConfig } from "@/config/supabase-public";
 
 export type Role = "client_admin" | "site_owner";
-export type AuthUser = { id: string; email?: string; app_metadata?: { role?: unknown }; user_metadata?: { display_name?: string } };
+export type AuthUser = { id: string; email?: string; app_metadata?: { role?: unknown }; user_metadata?: { display_name?: string; full_name?: string; name?: string }; identities?: Array<{ provider?: string }> };
 export type Session = { access_token: string; refresh_token: string; expires_at: number; user: AuthUser };
 
 const storageKey = "ster-schoonmaak-backoffice-session";
@@ -25,7 +25,7 @@ function getClient() {
 function readSession(): Session | null { try { const raw = window.localStorage.getItem(storageKey); return raw ? JSON.parse(raw) as Session : null; } catch { return null; } }
 function writeSession(session: Session | null) { try { if (session) window.localStorage.setItem(storageKey, JSON.stringify(session)); else window.localStorage.removeItem(storageKey); } catch { /* storage can be disabled */ } }
 function isRole(value: unknown): value is Role { return value === "client_admin" || value === "site_owner"; }
-function toAuthUser(user: User): AuthUser { return { id: user.id, email: user.email, app_metadata: user.app_metadata as AuthUser["app_metadata"], user_metadata: user.user_metadata as AuthUser["user_metadata"] }; }
+function toAuthUser(user: User): AuthUser { return { id: user.id, email: user.email, app_metadata: user.app_metadata as AuthUser["app_metadata"], user_metadata: user.user_metadata as AuthUser["user_metadata"], identities: user.identities?.map((identity) => ({ provider: identity.provider })) }; }
 function toSession(session: SupabaseSession, user = session.user): Session { return { access_token: session.access_token, refresh_token: session.refresh_token, expires_at: (session.expires_at ?? Math.floor(Date.now() / 1000) + session.expires_in) * 1000, user: toAuthUser(user) }; }
 function withTimeout<T>(operation: Promise<T>, message: string): Promise<T> { return new Promise((resolve, reject) => { const timer = window.setTimeout(() => reject(new Error(message)), AUTH_OPERATION_TIMEOUT_MS); operation.then((value) => { window.clearTimeout(timer); resolve(value); }, (error) => { window.clearTimeout(timer); reject(error); }); }); }
 
@@ -38,6 +38,16 @@ function authMessage(value: unknown, fallback = "Authentication failed."): strin
 }
 
 export function friendlyAuthError(value: unknown, fallback = "Authentication failed.") { const message = authMessage(value); return message === "Authentication failed." ? fallback : message; }
+export function friendlyPublicAuthError(value: unknown, fallback = "We could not complete that request.") {
+  const message = value instanceof Error ? value.message : String(value ?? "");
+  if (/rate limit|too many|email.*limit|limit.*email/i.test(message)) return "Please wait a moment before trying again.";
+  if (/invalid login credentials|invalid.*password/i.test(message)) return "The email or password is incorrect.";
+  if (/already registered|already exists|user already/i.test(message)) return "An account with this email may already exist. Try logging in instead.";
+  if (/password/i.test(message) && /weak|short|least|character/i.test(message)) return "Choose a stronger password with at least 8 characters.";
+  if (/provider.*not enabled|unsupported provider|google/i.test(message)) return "Google sign-in is not available yet.";
+  if (/email not confirmed/i.test(message)) return "Please confirm your email address before logging in.";
+  return fallback;
+}
 
 async function currentSession(): Promise<Session | null> {
   const auth = getClient().auth;
@@ -61,14 +71,47 @@ export async function signIn(email: string, password: string): Promise<Session> 
 export async function refreshSession(): Promise<Session | null> { try { return await currentSession(); } catch { writeSession(null); return null; } }
 export async function signOut() { try { await getClient().auth.signOut(); } finally { writeSession(null); } }
 
-export function resetRedirect(role: Role) {
+export function resetRedirect(role?: Role) {
+  if (!role) return publicAuthRedirect("/account/reset");
   if (typeof window === "undefined") return `https://sterschoonmaak.be/${role === "site_owner" ? "owner" : "backoffice"}/reset`;
   const hostname = window.location.hostname.toLowerCase();
   const origin = hostname === "www.sterschoonmaak.be" ? "https://sterschoonmaak.be" : window.location.origin;
   return `${origin}/${role === "site_owner" ? "owner" : "backoffice"}/reset`;
 }
 
-export async function requestPasswordReset(email: string, redirectTo: string) {
+export function publicAuthRedirect(path = "/") {
+  if (typeof window === "undefined") return `https://sterschoonmaak.be${path}`;
+  const hostname = window.location.hostname.toLowerCase();
+  const origin = hostname === "www.sterschoonmaak.be" ? "https://sterschoonmaak.be" : window.location.origin;
+  return `${origin}${path}`;
+}
+
+export function routeForSession(session: Session | null) {
+  const role = roleOf(session);
+  return role === "site_owner" ? "/owner" : role === "client_admin" ? "/backoffice" : "/account";
+}
+
+export async function signInWithGoogle() {
+  const { error } = await getClient().auth.signInWithOAuth({ provider: "google", options: { redirectTo: publicAuthRedirect("/") } });
+  if (error) throw new Error(error.message);
+}
+
+export async function signUp(email: string, password: string, displayName: string) {
+  const { data, error } = await getClient().auth.signUp({ email: email.trim().toLowerCase(), password, options: { data: { display_name: displayName.trim() }, emailRedirectTo: publicAuthRedirect("/") } });
+  if (error) throw new Error(error.message);
+  return data.session ? currentSession() : null;
+}
+
+export function subscribeAuthState(callback: (session: Session | null) => void) {
+  const { data } = getClient().auth.onAuthStateChange((_, session) => {
+    const next = session ? toSession(session) : null;
+    writeSession(next);
+    callback(next);
+  });
+  return () => data.subscription.unsubscribe();
+}
+
+export async function requestPasswordReset(email: string, redirectTo = publicAuthRedirect("/account/reset")) {
   const { error } = await getClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
   if (error) throw new Error(authMessage(error));
 }
@@ -84,6 +127,12 @@ export async function updatePassword(password: string) {
 function authParams(url: URL) {
   const fragment = new URLSearchParams(url.hash.replace(/^#/, ""));
   return { accessToken: fragment.get("access_token") ?? url.searchParams.get("access_token"), refreshToken: fragment.get("refresh_token") ?? url.searchParams.get("refresh_token"), code: url.searchParams.get("code"), tokenHash: url.searchParams.get("token_hash"), type: url.searchParams.get("type") ?? fragment.get("type"), error: url.searchParams.get("error") ?? fragment.get("error"), errorDescription: url.searchParams.get("error_description") ?? fragment.get("error_description") };
+}
+
+export function isRecoveryCallbackUrl() {
+  if (typeof window === "undefined") return false;
+  const params = authParams(new URL(window.location.href));
+  return params.type === "recovery";
 }
 
 export function hasAuthCallbackUrl() {
