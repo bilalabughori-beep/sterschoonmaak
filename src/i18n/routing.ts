@@ -38,6 +38,10 @@ export const pathnames = {
     "nl-BE": "/privacybeleid",
     "en-BE": "/privacy-policy",
   },
+  "/klacht": {
+    "nl-BE": "/klacht",
+    "en-BE": "/en/complaint",
+  },
   "/cookiebeleid": {
     "nl-BE": "/cookiebeleid",
     "en-BE": "/cookie-policy",

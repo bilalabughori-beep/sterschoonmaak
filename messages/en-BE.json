@@ -1,4 +1,10 @@
 {
+  "complaintPage": {
+    "title": "Submit a complaint | Ster Schoonmaak",
+    "heading": "We listen and follow up.",
+    "eyebrow": "Customer care",
+    "description": "Did something not go as expected? Leave your details and a clear explanation. We will follow up as soon as possible."
+  },
   "metadata": {
     "title": "Ster Schoonmaak",
     "description": "Professional cleaning services in Ghent and surrounding areas."
@@ -224,6 +230,7 @@
     "nextTitle": "From your message to a suitable next step.",
     "nextDescription": "After your enquiry, we discuss the key details. When needed, a site visit can be arranged before you receive a tailored, no-obligation quotation.",
     "quoteCta": "Request a Free Quote",
+    "complaintCta": "Submit a complaint",
     "servicesCta": "View services",
     "finalEyebrow": "Ready to share your question?",
     "finalTitle": "We listen to what your property needs.",
@@ -491,6 +498,43 @@
     "privacy": "Privacy Policy",
     "cookies": "Cookie Policy",
     "copyright": "© {year} Ster Schoonmaak"
+  },
+  "chat": {
+    "open": "Chat with us",
+    "close": "Close chat",
+    "panelLabel": "Ster Schoonmaak customer support chat",
+    "title": "Ster Schoonmaak",
+    "subtitle": "A few details for your request",
+    "welcome": "Hi! I can help you find the right Ster Schoonmaak service and collect a few details for your request. What would you like cleaned?",
+    "thinking": "One moment…",
+    "saving": "Saving your request…",
+    "inputLabel": "Your message",
+    "inputPlaceholder": "Type your message…",
+    "send": "Send",
+    "otherService": "Other / I’m not sure",
+    "genericError": "The chat could not connect just now. Please try again or choose an option below.",
+    "missingApiUrl": "Chat development setup: set NEXT_PUBLIC_CHAT_API_URL to connect this widget.",
+    "privacyNotice": "Your details are used to handle this request and discuss it with Ster Schoonmaak.",
+    "privacyLink": "Privacy policy",
+    "leadSaved": "Your request is saved. Reference: {reference}.",
+    "continueWhatsApp": "Continue on WhatsApp",
+    "startNew": "Start a new request",
+    "retrySave": "Try again",
+    "leadSaveError": "Your request could not be saved. Your details are still here; please try again.",
+    "serviceLabels": {
+      "office": "Office cleaning",
+      "commercial": "Commercial cleaning",
+      "restaurant": "Restaurant cleaning",
+      "hotel": "Hotel cleaning",
+      "school": "School cleaning",
+      "home": "Home cleaning",
+      "deep": "Deep cleaning",
+      "windows": "Window cleaning",
+      "postConstruction": "After-renovation cleaning",
+      "move": "Move cleaning",
+      "airbnb": "Airbnb cleaning",
+      "staircase": "Staircase cleaning"
+    }
   },
   "routeShell": {
     "eyebrow": "Phase 1 · Route shell",

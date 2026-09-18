@@ -57,6 +57,20 @@ Contact and social controls are rendered only when their values are configured i
 
 ### Deferred to later phases
 
-Phase 3B includes the eight remaining service pages. The Business Cleaning hub, real contact/quote form, uploads, Supabase, email, Turnstile, analytics, cookie consent, reviews, legal-policy content, and CMS/admin functionality remain intentionally deferred to later phases. Phase 3C has not started.
+Phase 3B includes the eight remaining service pages. Customer complaints and the authenticated client/site-owner backoffices are implemented as a runtime extension of the existing Worker/Supabase architecture. Offers are loaded from the Worker at runtime, so publishing does not require a Firebase redeploy. Real account bootstrap, notification-provider values, and domain cutover remain deployment gates rather than source-code placeholders.
 
 Local photo sources and attribution are documented in `public/images/README.md`; remote image hotlinks are not used.
+
+### Backoffice and complaints
+
+The public complaint form is available at `/klacht` and `/en/complaint`. Client administrators use `/backoffice`; site owners use `/owner`. Both use the existing Supabase Auth project. Role authorization is verified by the Worker from trusted Auth `app_metadata`, and unauthorised accounts receive no complaint or offer data. Site owners can manage draft/published/archived offers, controlled placement/theme/layout fields, schedules, images, and previews. Client administrators cannot access offer-management endpoints.
+
+Before production use, apply the recorded Supabase migration, configure the public Supabase Auth key at build time, set the Worker customer-confirmation email variables, invite the two approved accounts, and configure the production Auth redirect URLs. No public customer account is created.
+
+### Phase 2 customer-support chatbot
+
+The site-wide chat widget is implemented in `src/components/chat/` and calls the separate Cloudflare Worker in `worker/`. The Worker owns a deterministic guided flow and uses the Cloudflare-hosted `@cf/meta/llama-3.2-1b-instruct` model through the remote `AI` binding only when constrained free-text extraction is useful. Confirmed requests are persisted by the Worker in the existing Supabase project and receive a deterministic `wa.me` handoff URL; the system does not send WhatsApp messages through the WhatsApp Business API.
+
+The Supabase table is `public.website_chat_leads`. It has RLS enabled, no browser-role grants or policies, and only the Worker’s secret-backed service path can insert or read rows. The request UUID is unique and the Worker uses conflict-ignore plus a read-back, so retries return the existing lead instead of creating or overwriting a second one. The browser bundle contains no Supabase secret.
+
+For local chat testing, set the public build-time variable `NEXT_PUBLIC_CHAT_API_URL` to the local or development Worker URL, then run `npm run dev`. Worker setup, type generation, development, deployment, CORS, persistence, and the exact Phase 2 boundary are documented in [`worker/README.md`](worker/README.md).

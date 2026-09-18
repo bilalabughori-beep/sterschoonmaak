@@ -1,4 +1,10 @@
 {
+  "complaintPage": {
+    "title": "Een klacht melden | Ster Schoonmaak",
+    "heading": "We luisteren en volgen op.",
+    "eyebrow": "Klantenservice",
+    "description": "Is er iets niet verlopen zoals verwacht? Laat uw gegevens en een duidelijke toelichting achter. We nemen zo snel mogelijk contact op."
+  },
   "metadata": {
     "title": "Ster Schoonmaak",
     "description": "Professionele schoonmaakdiensten in Gent en omgeving."
@@ -231,6 +237,7 @@
     "nextTitle": "Van bericht naar een passende volgende stap.",
     "nextDescription": "Na uw vraag bespreken we de belangrijkste details. Wanneer nodig kan een plaatsbezoek worden afgesproken voordat u een vrijblijvende offerte ontvangt.",
     "quoteCta": "Vrijblijvende offerte aanvragen",
+    "complaintCta": "Een klacht melden",
     "servicesCta": "Bekijk de diensten",
     "finalEyebrow": "Liever meteen uw vraag delen?",
     "finalTitle": "We luisteren naar wat uw pand nodig heeft.",
@@ -498,6 +505,43 @@
     "privacy": "Privacybeleid",
     "cookies": "Cookiebeleid",
     "copyright": "© {year} Ster Schoonmaak"
+  },
+  "chat": {
+    "open": "Chat met ons",
+    "close": "Chat sluiten",
+    "panelLabel": "Chat met de klantendienst van Ster Schoonmaak",
+    "title": "Ster Schoonmaak",
+    "subtitle": "Enkele gegevens voor uw aanvraag",
+    "welcome": "Hallo! Ik help u graag de juiste schoonmaakdienst te kiezen en enkele gegevens voor uw aanvraag te verzamelen. Wat wilt u laten schoonmaken?",
+    "thinking": "Even geduld…",
+    "saving": "Aanvraag opslaan…",
+    "inputLabel": "Uw bericht",
+    "inputPlaceholder": "Typ uw bericht…",
+    "send": "Versturen",
+    "otherService": "Andere / Ik weet het niet zeker",
+    "genericError": "De chat kon nu geen verbinding maken. Probeer opnieuw of kies hieronder een optie.",
+    "missingApiUrl": "Chatconfiguratie voor ontwikkeling: stel NEXT_PUBLIC_CHAT_API_URL in om deze widget te verbinden.",
+    "privacyNotice": "Uw gegevens worden gebruikt om deze aanvraag te behandelen en met Ster Schoonmaak te bespreken.",
+    "privacyLink": "Privacybeleid",
+    "leadSaved": "Uw aanvraag is opgeslagen. Referentie: {reference}.",
+    "continueWhatsApp": "Verdergaan via WhatsApp",
+    "startNew": "Nieuwe aanvraag starten",
+    "retrySave": "Opnieuw proberen",
+    "leadSaveError": "Uw aanvraag kon niet worden opgeslagen. Uw gegevens zijn bewaard; probeer het opnieuw.",
+    "serviceLabels": {
+      "office": "Kantoorschoonmaak",
+      "commercial": "Bedrijfsschoonmaak",
+      "restaurant": "Restaurantschoonmaak",
+      "hotel": "Hotelschoonmaak",
+      "school": "Schoolschoonmaak",
+      "home": "Woningschoonmaak",
+      "deep": "Grondige schoonmaak",
+      "windows": "Ramenreiniging",
+      "postConstruction": "Schoonmaak na renovatie",
+      "move": "Verhuisschoonmaak",
+      "airbnb": "Airbnb-schoonmaak",
+      "staircase": "Trappenhal schoonmaken"
+    }
   },
   "routeShell": {
     "eyebrow": "Fase 1 · Route in voorbereiding",

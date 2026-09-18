@@ -26,6 +26,7 @@ const localizedRoutes = [
   ["offerte", "offerte", "quote"],
   ["privacybeleid", "privacybeleid", "privacy-policy"],
   ["cookiebeleid", "cookiebeleid", "cookie-policy"],
+  ["klacht", "klacht", "complaint"],
   ["diensten/kantoorschoonmaak", "diensten/kantoorschoonmaak", "services/office-cleaning"],
   ["diensten/bedrijfsschoonmaak", "diensten/bedrijfsschoonmaak", "services/commercial-cleaning"],
   ["diensten/restaurantschoonmaak", "diensten/restaurantschoonmaak", "services/restaurant-cleaning"],

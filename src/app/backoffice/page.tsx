@@ -1,0 +1,2 @@
+import { BackofficeApp } from "@/components/backoffice/backoffice-app";
+export default function BackofficePage() { return <BackofficeApp area="client" />; }

@@ -3,6 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { TopBar } from "@/components/layout/top-bar";
+import { ChatWidget } from "@/components/chat/chat-widget";
+import { DynamicOffers } from "@/components/offers/dynamic-offers";
 
 export async function SiteShell({ children }: Readonly<{ children: ReactNode }>) {
   const t = await getTranslations("common");
@@ -17,10 +19,12 @@ export async function SiteShell({ children }: Readonly<{ children: ReactNode }>)
       </a>
       <TopBar />
       <SiteHeader />
+      <DynamicOffers />
       <main id="main-content" className="flex-1">
         {children}
       </main>
       <SiteFooter />
+      <ChatWidget />
     </div>
   );
 }
