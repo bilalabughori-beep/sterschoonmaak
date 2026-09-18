@@ -1,5 +1,7 @@
 "use client";
 
+import { createClient, type Session as SupabaseSession, type User } from "@supabase/supabase-js";
+
 export type Role = "client_admin" | "site_owner";
 export type AuthUser = { id: string; email?: string; app_metadata?: { role?: unknown }; user_metadata?: { display_name?: string } };
 export type Session = { access_token: string; refresh_token: string; expires_at: number; user: AuthUser };
@@ -7,54 +9,125 @@ export type Session = { access_token: string; refresh_token: string; expires_at:
 const storageKey = "ster-schoonmaak-backoffice-session";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "") ?? "";
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+let client: ReturnType<typeof createClient> | null = null;
+let callbackPromise: Promise<Session | null> | null = null;
 
-function readSession(): Session | null {
-  try { const raw = window.localStorage.getItem(storageKey); return raw ? JSON.parse(raw) as Session : null; } catch { return null; }
+function getClient() {
+  if (!client) {
+    if (!supabaseUrl || !publishableKey) throw new Error("Supabase Auth is not configured.");
+    client = createClient(supabaseUrl, publishableKey, { auth: { autoRefreshToken: true, detectSessionInUrl: false, flowType: "pkce", persistSession: true } });
+  }
+  return client;
 }
+
+function readSession(): Session | null { try { const raw = window.localStorage.getItem(storageKey); return raw ? JSON.parse(raw) as Session : null; } catch { return null; } }
 function writeSession(session: Session | null) { try { if (session) window.localStorage.setItem(storageKey, JSON.stringify(session)); else window.localStorage.removeItem(storageKey); } catch { /* storage can be disabled */ } }
 function isRole(value: unknown): value is Role { return value === "client_admin" || value === "site_owner"; }
+function toAuthUser(user: User): AuthUser { return { id: user.id, email: user.email, app_metadata: user.app_metadata as AuthUser["app_metadata"], user_metadata: user.user_metadata as AuthUser["user_metadata"] }; }
+function toSession(session: SupabaseSession, user = session.user): Session { return { access_token: session.access_token, refresh_token: session.refresh_token, expires_at: (session.expires_at ?? Math.floor(Date.now() / 1000) + session.expires_in) * 1000, user: toAuthUser(user) }; }
 
-async function authRequest(path: string, init: RequestInit = {}) {
-  if (!supabaseUrl || !publishableKey) throw new Error("Supabase Auth is not configured.");
-  const response = await fetch(`${supabaseUrl}/auth/v1/${path}`, { ...init, headers: { apikey: publishableKey, "content-type": "application/json", ...(init.headers ?? {}) } });
-  const body = await response.json().catch(() => null) as { error_description?: string; msg?: string; access_token?: string; refresh_token?: string; expires_in?: number; user?: AuthUser } | null;
-  if (!response.ok) throw new Error(body?.error_description ?? body?.msg ?? "Authentication request failed.");
-  return body;
+function authMessage(value: unknown, fallback = "Authentication failed."): string {
+  const message = value instanceof Error ? value.message : String(value ?? "");
+  if (/rate limit|too many|email.*limit|limit.*email/i.test(message)) return "We’ve sent several authentication emails recently. Please wait a while before requesting another one.";
+  if (/invalid login credentials/i.test(message)) return "The email or password is incorrect.";
+  if (/email not confirmed/i.test(message)) return "Please open the invitation or confirmation email before signing in.";
+  return message || fallback;
 }
 
-function fromResponse(value: { access_token?: string; refresh_token?: string; expires_in?: number; user?: AuthUser } | null): Session {
-  if (!value?.access_token || !value.refresh_token || !value.user) throw new Error("Supabase returned an incomplete session.");
-  return { access_token: value.access_token, refresh_token: value.refresh_token, expires_at: Date.now() + (value.expires_in ?? 3600) * 1000, user: value.user };
+export function friendlyAuthError(value: unknown, fallback = "Authentication failed.") { const message = authMessage(value); return message === "Authentication failed." ? fallback : message; }
+
+async function currentSession(): Promise<Session | null> {
+  const auth = getClient().auth;
+  const { data, error } = await auth.getSession();
+  if (error || !data.session) { writeSession(null); return null; }
+  const userResponse = await auth.getUser();
+  if (userResponse.error || !userResponse.data.user) { writeSession(null); return null; }
+  const session = toSession(data.session, userResponse.data.user);
+  writeSession(session);
+  return session;
 }
 
 export async function signIn(email: string, password: string): Promise<Session> {
-  const result = await authRequest("token?grant_type=password", { method: "POST", body: JSON.stringify({ email: email.trim().toLowerCase(), password }) });
-  const session = fromResponse(result); writeSession(session); return session;
+  const { data, error } = await getClient().auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+  if (error || !data.session) throw new Error(authMessage(error));
+  const session = await currentSession();
+  if (!session) throw new Error("Supabase returned an incomplete session.");
+  return session;
 }
 
-export async function refreshSession(): Promise<Session | null> {
-  const current = readSession(); if (!current) return null;
-  if (current.expires_at > Date.now() + 60_000) return current;
-  try { const result = await authRequest("token?grant_type=refresh_token", { method: "POST", body: JSON.stringify({ refresh_token: current.refresh_token }) }); const session = fromResponse(result); writeSession(session); return session; } catch { writeSession(null); return null; }
-}
+export async function refreshSession(): Promise<Session | null> { try { return await currentSession(); } catch { writeSession(null); return null; } }
+export async function signOut() { try { await getClient().auth.signOut(); } finally { writeSession(null); } }
 
-export async function signOut() {
-  const session = readSession();
-  if (session && supabaseUrl && publishableKey) await fetch(`${supabaseUrl}/auth/v1/logout`, { method: "POST", headers: { apikey: publishableKey, authorization: `Bearer ${session.access_token}` } }).catch(() => undefined);
-  writeSession(null);
+export function resetRedirect(role: Role) {
+  if (typeof window === "undefined") return `https://sterschoonmaak.be/${role === "site_owner" ? "owner" : "backoffice"}/reset`;
+  const hostname = window.location.hostname.toLowerCase();
+  const origin = hostname === "www.sterschoonmaak.be" ? "https://sterschoonmaak.be" : window.location.origin;
+  return `${origin}/${role === "site_owner" ? "owner" : "backoffice"}/reset`;
 }
 
 export async function requestPasswordReset(email: string, redirectTo: string) {
-  await authRequest("recover", { method: "POST", body: JSON.stringify({ email: email.trim().toLowerCase(), redirect_to: redirectTo }) });
+  const { error } = await getClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+  if (error) throw new Error(authMessage(error));
 }
 
-export async function updatePassword(password: string, accessToken?: string) {
-  const token = accessToken ?? readSession()?.access_token;
-  if (!token) throw new Error("Your reset link is no longer valid.");
-  const result = await authRequest("user", { method: "PUT", headers: { authorization: `Bearer ${token}` }, body: JSON.stringify({ password }) });
-  if (result?.user) { const current = readSession(); if (current) writeSession({ ...current, user: result.user }); }
+export async function updatePassword(password: string) {
+  const { data, error } = await getClient().auth.updateUser({ password });
+  if (error || !data.user) throw new Error(authMessage(error, "Your password could not be updated."));
+  const session = await currentSession();
+  if (!session) throw new Error("Your password was updated, but the session could not be restored.");
+  return session;
+}
+
+function authParams(url: URL) {
+  const fragment = new URLSearchParams(url.hash.replace(/^#/, ""));
+  return { accessToken: fragment.get("access_token") ?? url.searchParams.get("access_token"), refreshToken: fragment.get("refresh_token") ?? url.searchParams.get("refresh_token"), code: url.searchParams.get("code"), tokenHash: url.searchParams.get("token_hash"), type: url.searchParams.get("type") ?? fragment.get("type"), error: url.searchParams.get("error") ?? fragment.get("error"), errorDescription: url.searchParams.get("error_description") ?? fragment.get("error_description") };
+}
+
+export function hasAuthCallbackUrl() {
+  if (typeof window === "undefined") return false;
+  const params = authParams(new URL(window.location.href));
+  return Boolean(params.accessToken || params.refreshToken || params.code || params.tokenHash || params.error || params.errorDescription);
+}
+
+function cleanAuthUrl() {
+  const url = new URL(window.location.href);
+  ["code", "token_hash", "type", "error", "error_description", "error_code", "access_token", "refresh_token", "expires_at", "expires_in", "token_type", "provider_token", "provider_refresh_token"].forEach((name) => url.searchParams.delete(name));
+  url.hash = "";
+  window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+}
+
+export async function consumeAuthCallback(): Promise<Session | null> {
+  if (typeof window === "undefined") return null;
+  if (callbackPromise) return callbackPromise;
+  if (!hasAuthCallbackUrl()) return currentSession();
+  callbackPromise = (async () => {
+    const url = new URL(window.location.href);
+    const params = authParams(url);
+    try {
+      const auth = getClient().auth;
+      if (params.error || params.errorDescription) throw new Error(params.errorDescription ?? params.error ?? "The authentication link is no longer valid.");
+      if (params.code) {
+        const { error } = await auth.exchangeCodeForSession(params.code);
+        if (error) throw error;
+      } else if (params.tokenHash) {
+        const { error } = await auth.verifyOtp({ token_hash: params.tokenHash, type: (params.type ?? "recovery") as "invite" | "recovery" });
+        if (error) throw error;
+      } else if (params.accessToken && params.refreshToken) {
+        const { error } = await auth.setSession({ access_token: params.accessToken, refresh_token: params.refreshToken });
+        if (error) throw error;
+      } else {
+        throw new Error("The authentication link is incomplete.");
+      }
+      return await currentSession();
+    } catch (error) {
+      throw new Error(authMessage(error, "The authentication link is no longer valid."));
+    } finally {
+      cleanAuthUrl();
+    }
+  })();
+  try { return await callbackPromise; } finally { callbackPromise = null; }
 }
 
 export function roleOf(session: Session | null): Role | null { const role = session?.user.app_metadata?.role; return isRole(role) ? role : null; }
-export function workerApiUrl() { return process.env.NEXT_PUBLIC_BACKOFFICE_API_URL?.replace(/\/$/, "") ?? process.env.NEXT_PUBLIC_CHAT_API_URL?.replace(/\/$/, "") ?? ""; }
 export function getStoredSession() { return readSession(); }
+export function workerApiUrl() { return process.env.NEXT_PUBLIC_BACKOFFICE_API_URL?.replace(/\/$/, "") ?? process.env.NEXT_PUBLIC_CHAT_API_URL?.replace(/\/$/, "") ?? ""; }

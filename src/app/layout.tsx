@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Manrope } from "next/font/google";
 import { siteConfig } from "@/config/site";
+import { AuthCallbackRouter } from "@/components/backoffice/auth-callback-router";
+import "./globals.css";
+
+const manrope = Manrope({
+  variable: "--font-brand",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -25,5 +33,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <html lang="nl-BE" className={`${manrope.variable} h-full antialiased`}>
+      <body className="min-h-full">
+        <AuthCallbackRouter />
+        {children}
+      </body>
+    </html>
+  );
 }
