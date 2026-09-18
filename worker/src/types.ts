@@ -67,9 +67,11 @@ export interface Env {
   DEV_OBSERVABILITY?: string;
   SUPABASE_URL?: string;
   SUPABASE_SECRET_KEY?: string;
+  SUPABASE_PUBLISHABLE_KEY?: string;
   WHATSAPP_TARGET_NUMBER?: string;
   RESEND_API_KEY?: string;
-  RESEND_FROM_EMAIL?: string;
+  COMPLAINT_EMAIL_FROM?: string;
+  COMPLAINT_EMAIL_REPLY_TO?: string;
   PUBLIC_SITE_URL?: string;
 }
 

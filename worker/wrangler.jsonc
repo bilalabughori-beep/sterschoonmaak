@@ -13,6 +13,7 @@
     "SUPABASE_URL": "https://uhdgbkmtlahcvokxbtbx.supabase.co",
     "WHATSAPP_TARGET_NUMBER": "32465840958",
     "PUBLIC_SITE_URL": "https://sterschoonmaak.be",
-    "RESEND_FROM_EMAIL": "Ster Schoonmaak <info@sterschoonmaak.be>"
+    "COMPLAINT_EMAIL_FROM": "Ster Schoonmaak <info@sterschoonmaak.be>",
+    "COMPLAINT_EMAIL_REPLY_TO": "info@sterschoonmaak.be"
   }
 }

@@ -59,7 +59,9 @@ Rate limiting is not provisioned because the account’s native Workers Rate Lim
 
 The Worker is the only application path to `profiles`, `complaints`, `offers`, and offer media. Supabase RLS is enabled with no broad browser policies. The browser uses Supabase Auth only and the Worker verifies the access token against `/auth/v1/user`, accepting only the trusted `app_metadata.role` values `client_admin` and `site_owner`.
 
-Apply `supabase/migrations/20260918090000_create_backoffice_complaints_offers.sql` to the existing project before using the new endpoints. Keep `SUPABASE_SECRET_KEY` and `RESEND_API_KEY` as Wrangler secrets. Customer complaint confirmations are sent to the submitted customer email with Reply-To `info@sterschoonmaak.be`; configure `RESEND_FROM_EMAIL` as the verified sender `Ster Schoonmaak <info@sterschoonmaak.be>`. Resend's free tier is sufficient for the expected small-business volume; domain verification is still required for production delivery.
+Complaint email configuration uses the server-side variables `COMPLAINT_EMAIL_FROM` and `COMPLAINT_EMAIL_REPLY_TO`; `RESEND_API_KEY` remains a Wrangler secret. `SUPABASE_PUBLISHABLE_KEY` is optional Worker configuration and is never used as a server secret.
+
+Apply `supabase/migrations/20260918090000_create_backoffice_complaints_offers.sql` to the existing project before using the new endpoints. Keep `SUPABASE_SECRET_KEY` and `RESEND_API_KEY` as Wrangler secrets. Customer complaint confirmations are sent to the submitted customer email with Reply-To `info@sterschoonmaak.be`; configure `COMPLAINT_EMAIL_FROM` as the verified sender `Ster Schoonmaak <info@sterschoonmaak.be>`. Resend's free tier is sufficient for the expected small-business volume; domain verification is still required for production delivery.
 
 The public offer response contains only localized, active offers. An offer is active only when it is published, enabled, within its schedule, and sorted by priority then newest publication time. Updating an offer does not require a Firebase build or deploy.
 
