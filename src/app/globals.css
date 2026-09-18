@@ -42,6 +42,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html[dir="rtl"] body {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
 ::selection {
   background: #cfe0ff;
   color: var(--navy);
