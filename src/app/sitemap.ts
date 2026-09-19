@@ -12,6 +12,8 @@ const publicPaths = [
   "/contact",
   "/klacht",
   "/en/complaint",
+  "/privacy",
+  "/terms",
   "/zakelijk",
   "/business-cleaning",
   ...serviceRegistry.flatMap((service) => [service.pathnames["nl-BE"], service.pathnames["en-BE"]]),

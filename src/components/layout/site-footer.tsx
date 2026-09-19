@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import NextLink from "next/link";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { navigationItems } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
@@ -76,9 +77,14 @@ export async function SiteFooter() {
           <nav aria-label={t("legalLabel")}>
             <ul className="flex flex-wrap gap-x-5 gap-y-2">
               <li>
-                <Link href="/privacybeleid" className="underline-offset-4 hover:text-white hover:underline">
+                <NextLink href="/privacy" className="underline-offset-4 hover:text-white hover:underline">
                   {t("privacy")}
-                </Link>
+                </NextLink>
+              </li>
+              <li>
+                <NextLink href="/terms" className="underline-offset-4 hover:text-white hover:underline">
+                  {t("terms")}
+                </NextLink>
               </li>
               <li>
                 <Link href="/cookiebeleid" className="underline-offset-4 hover:text-white hover:underline">
