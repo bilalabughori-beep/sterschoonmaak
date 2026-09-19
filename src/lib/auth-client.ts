@@ -2,6 +2,7 @@
 
 import { createClient, type Session as SupabaseSession, type User } from "@supabase/supabase-js";
 import { supabasePublicConfig } from "@/config/supabase-public";
+import { defaultPublicWorkerUrl } from "@/config/public-runtime";
 
 export type Role = "client_admin" | "site_owner";
 export type AuthUser = { id: string; email?: string; app_metadata?: { role?: unknown }; user_metadata?: { display_name?: string; full_name?: string; name?: string }; identities?: Array<{ provider?: string }> };
@@ -186,4 +187,4 @@ export async function consumeAuthCallback(): Promise<Session | null> {
 
 export function roleOf(session: Session | null): Role | null { const role = session?.user.app_metadata?.role; return isRole(role) ? role : null; }
 export function getStoredSession() { return readSession(); }
-export function workerApiUrl() { return process.env.NEXT_PUBLIC_BACKOFFICE_API_URL?.replace(/\/$/, "") ?? process.env.NEXT_PUBLIC_CHAT_API_URL?.replace(/\/$/, "") ?? ""; }
+export function workerApiUrl() { return (process.env.NEXT_PUBLIC_BACKOFFICE_API_URL ?? process.env.NEXT_PUBLIC_CHAT_API_URL ?? defaultPublicWorkerUrl).replace(/\/$/, ""); }

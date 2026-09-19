@@ -1,6 +1,7 @@
 import type { ChatAction, ChatResponse, ChatState, LeadResponse } from "./chat-types";
+import { defaultPublicWorkerUrl } from "@/config/public-runtime";
 
-export const chatApiUrl = process.env.NEXT_PUBLIC_CHAT_API_URL?.replace(/\/$/, "") ?? "";
+export const chatApiUrl = (process.env.NEXT_PUBLIC_CHAT_API_URL ?? process.env.NEXT_PUBLIC_BACKOFFICE_API_URL ?? defaultPublicWorkerUrl).replace(/\/$/, "");
 
 export async function sendChatRequest({
   locale,
