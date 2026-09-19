@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl-BE" className={`${manrope.variable} h-full antialiased`}>
+    <html lang="nl-BE" dir="ltr" className={`${manrope.variable} h-full antialiased`}>
       <body className="min-h-full">
         <AuthCallbackRouter />
         {children}

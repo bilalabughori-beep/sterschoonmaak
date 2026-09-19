@@ -7,6 +7,10 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "cleanUrls": true
+    "cleanUrls": true,
+    "redirects": [
+      { "source": "/nl-BE", "destination": "/", "type": 301 },
+      { "source": "/en-BE", "destination": "/en", "type": 301 }
+    ]
   }
 }

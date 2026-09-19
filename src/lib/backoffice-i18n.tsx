@@ -441,6 +441,20 @@ export function BackofficeLocaleProvider({ children }: { children: ReactNode }) 
   const [locale, setLocaleState] = useState<BackofficeLocale>("nl-BE");
 
   useEffect(() => {
+    const previous = {
+      documentLang: document.documentElement.lang,
+      documentDir: document.documentElement.dir,
+      bodyDir: document.body.dir,
+    };
+
+    return () => {
+      document.documentElement.lang = previous.documentLang || "nl-BE";
+      document.documentElement.dir = previous.documentDir || "ltr";
+      document.body.dir = previous.bodyDir || "ltr";
+    };
+  }, []);
+
+  useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored !== "nl-BE" && stored !== "en-BE" && stored !== "ar") return;
     const timer = window.setTimeout(() => setLocaleState(stored), 0);

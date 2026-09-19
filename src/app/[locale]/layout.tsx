@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { routing } from "@/i18n/routing";
 import { SiteShell } from "@/components/layout/site-shell";
+import { PublicDocumentScope } from "@/components/layout/public-document-scope";
 export const metadata: Metadata = {
   title: {
     default: siteConfig.brandName,
@@ -34,5 +35,5 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
 
-  return <NextIntlClientProvider locale={locale} messages={messages}><SiteShell>{children}</SiteShell></NextIntlClientProvider>;
+  return <NextIntlClientProvider locale={locale} messages={messages}><PublicDocumentScope locale={locale}><SiteShell>{children}</SiteShell></PublicDocumentScope></NextIntlClientProvider>;
 }
