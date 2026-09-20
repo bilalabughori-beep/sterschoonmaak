@@ -17,6 +17,7 @@ export function LanguageSwitcher() {
 
   function handleChange(nextLocale: string) {
     if (nextLocale === locale) return;
+    try { window.localStorage.setItem("ster-schoonmaak-locale", nextLocale); } catch { /* preference storage is optional */ }
     router.replace(pathname, { locale: nextLocale as SupportedLocale });
   }
 

@@ -5,6 +5,7 @@ import type { SupportedLocale } from "@/config/site";
 
 export function PublicDocumentScope({ locale, children }: { locale: SupportedLocale; children: ReactNode }) {
   useEffect(() => {
+    try { window.localStorage.setItem("ster-schoonmaak-locale", locale); } catch { /* preference storage is optional */ }
     const previous = {
       documentLang: document.documentElement.lang,
       documentDir: document.documentElement.dir,

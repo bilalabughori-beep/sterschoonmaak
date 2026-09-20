@@ -60,6 +60,8 @@ export async function sendLeadRequest({
         preferredTime: lead.preferredTime,
         details: lead.details,
         name: lead.name,
+        email: lead.email,
+        phone: lead.phone,
       },
     }),
   });

@@ -27,7 +27,7 @@
     "setPassword": "Set password",
     "account": "My account",
     "accountTitle": "My account",
-    "accountDescription": "Manage your normal Ster Schoonmaak account.",
+    "accountDescription": "Manage your Ster Schoonmaak account.",
     "authenticationProvider": "Sign-in method",
     "language": "Language",
     "logout": "Log out",
@@ -498,13 +498,12 @@
       }
     }
   },
-  "foundation": {
-    "eyebrow": "Phase 0 · Foundation",
-    "title": "A clear foundation for Ster Schoonmaak.",
-    "description": "The multilingual technical foundation is ready. Commercial pages will follow in a later phase.",
-    "switchLocale": "View the Dutch version",
-    "currentLocale": "Current language: {locale}"
-  },
+  "serviceAreaPage": { "metaTitle": "Service Area Ghent and Surrounding Areas | Ster Schoonmaak", "metaDescription": "Professional cleaning in Ghent and surrounding areas. Learn how Ster Schoonmaak reviews location and scheduling.", "breadcrumb": "Service Area", "heroEyebrow": "Ghent and surrounding areas", "heroTitle": "Professional cleaning in Ghent and surrounding areas.", "heroDescription": "Ster Schoonmaak works from Ghent for homes and businesses. We review assignments in Ghent and surrounding areas within approximately 30 km, depending on location and planning.", "quoteCta": "Request a Free Quote", "contactCta": "Contact us", "visualEyebrow": "Local and practical", "visualTitle": "Ghent as our base.", "visualDescription": "Our service area is approximately {radius} km around Ghent. Feasibility is confirmed per assignment and schedule.", "whereEyebrow": "Where we work", "whereTitle": "A clear area, with room to discuss.", "whereDescription": "Distance is a first guideline. We always confirm whether an assignment fits the location, scope and available schedule.", "where": { "base": { "title": "Ghent", "description": "Ster Schoonmaak works from Ghent and surrounding areas." }, "radius": { "title": "Approximately 30 km", "description": "We review locations within approximately {radius} km around Ghent." }, "planning": { "title": "Reviewed per assignment", "description": "Availability depends on the location, assignment and schedule." } }, "customersEyebrow": "For homes and businesses", "customersTitle": "Cleaning that fits the place.", "customers": { "homes": { "title": "Homes", "description": "One-off or recurring cleaning for homes and apartments within clear arrangements." }, "businesses": { "title": "Businesses", "description": "Offices, shops, hospitality, schools and other professional spaces within the agreed scope." } }, "availabilityEyebrow": "Confirming availability", "availabilityTitle": "Know what to expect.", "availabilityDescription": "We do not promise every location within a radius automatically. We review your request and discuss what is practical.", "availability": { "request": { "title": "Share your address", "description": "Include your city or postcode with the key details of the assignment." }, "review": { "title": "We review feasibility", "description": "We consider location, scope and desired timing against the available schedule." }, "visit": { "title": "Site visit when needed", "description": "When it helps us assess the assignment properly, a site visit can be arranged." } }, "finalEyebrow": "Discuss your location", "finalTitle": "Not sure whether your address is in our area?", "finalDescription": "Include your city or postcode and we will review it with you.", "whatsappMessage": "Hello Ster Schoonmaak, I would like to know whether my location is within your service area." },
+  "aboutPage": { "metaTitle": "About Ster Schoonmaak | Cleaning in Ghent", "metaDescription": "Meet Ster Schoonmaak: professional, punctual and reliable cleaning for homes and businesses in Ghent and surrounding areas.", "breadcrumb": "About", "heroEyebrow": "About Ster Schoonmaak", "heroTitle": "Cleaning with clear arrangements.", "heroDescription": "Ster Schoonmaak helps homes and businesses in Ghent and surrounding areas with professional cleaning, suitable equipment and a practical approach.", "heroImageAlt": "A cleaner uses professional equipment to clean glass.", "heroImageCaption": "Professional equipment for careful work.", "quoteCta": "Request a Free Quote", "whoEyebrow": "Who we are", "whoTitle": "Professional, punctual and reliable.", "whoParagraphOne": "Ster Schoonmaak stands for careful work and clear communication. We discuss what is needed, which areas are included and what schedule is practical before the assignment starts.", "whoParagraphTwo": "From a home to an office or commercial property, the approach is adapted to the location and agreed tasks. That keeps expectations and results clear.", "workEyebrow": "How we work", "workTitle": "From your request to a concrete assignment.", "workDescription": "Good cleaning starts with attention to the space, access and practical context.", "work": { "scope": { "title": "We listen", "description": "We map the areas, tasks and points of attention clearly." }, "communicate": { "title": "We align", "description": "Timing, access, equipment and expectations are discussed practically." }, "deliver": { "title": "We deliver", "description": "We work carefully within the agreed scope and schedule." } }, "expectEyebrow": "What to expect", "expectTitle": "An approach that stays clear.", "expect": { "homes": { "title": "Homes and businesses", "description": "Cleaning for private and professional spaces in Ghent and surrounding areas." }, "businesses": { "title": "Flexible service", "description": "One-off and recurring assignments can be discussed." }, "equipment": { "title": "Professional equipment", "description": "Equipment is matched to the agreed areas and tasks." }, "area": { "title": "A clear service area", "description": "We review assignments from Ghent and surrounding areas, approximately 30 km depending on schedule." } }, "finalEyebrow": "Let us review it together", "finalTitle": "Tell us what your space needs.", "finalDescription": "We discuss the assignment, practical arrangements and a suitable next step.", "contactCta": "Contact us" },
+  "quotePage": { "metaTitle": "Free Quote | Ster Schoonmaak", "metaDescription": "Request a free quote for professional cleaning in Ghent and surrounding areas.", "breadcrumb": "Free Quote", "heroEyebrow": "Your cleaning request", "heroTitle": "Request a free quote.", "heroDescription": "Share the key details. We will review the assignment, location and schedule and then contact you.", "asideEyebrow": "What happens next?", "asideTitle": "A clear next step.", "asideDescription": "Your request is sent securely to Ster Schoonmaak through our existing request flow.", "asidePoints": { "scope": "We review the cleaning you need.", "location": "We check location and feasibility.", "followUp": "We discuss timing and a site visit if needed." }, "name": "Name", "email": "Email address", "phone": "Phone number", "service": "Cleaning type", "servicePlaceholder": "Choose a service", "location": "City or postcode", "locationPlaceholder": "For example Ghent or 9000", "frequency": "Frequency", "preferredTime": "Preferred timing (optional)", "preferredTimePlaceholder": "For example daytime or after opening hours", "message": "Your request", "messagePlaceholder": "Briefly tell us which areas or tasks you would like to discuss.", "frequencies": { "one_time": "One-off", "daily": "Daily", "several_per_week": "Several times per week", "weekly": "Weekly", "recurring_custom": "Recurring by arrangement", "not_sure": "Not sure yet" }, "submit": "Request a Quote", "sending": "Sending request…", "submitError": "Your request could not be sent. Your entered details are still here; please try again.", "privacyNote": "By submitting, Ster Schoonmaak uses your details to handle your request.", "contactFallback": "Prefer direct contact?", "whatsappMessage": "Hello Ster Schoonmaak, I would like to request a free quote.", "successEyebrow": "Request received", "successTitle": "Thank you for your request.", "successDescription": "Your request has been saved. Your reference is {reference}. We will review the details with you.", "continueWhatsApp": "Continue on WhatsApp", "newRequest": "New request", "validation": { "name": "Enter your name.", "email": "Enter a valid email address.", "phone": "Enter a valid phone number.", "service": "Choose a cleaning type.", "location": "Enter a city or postcode.", "message": "Briefly describe your cleaning request." } },
+  "cookiePolicy": { "metaTitle": "Cookie Policy | Ster Schoonmaak", "metaDescription": "Information about cookies and browser storage on the Ster Schoonmaak website.", "breadcrumb": "Cookie Policy", "title": "Cookie Policy", "intro": "This policy explains which browser storage this website uses and what choices you have.", "necessaryTitle": "Necessary storage", "necessaryText": "The website uses browser storage for necessary functions such as keeping your Supabase authentication session and safely handling an OAuth return. Without this storage, account features may not work correctly.", "authTitle": "Account and authentication", "authText": "When you sign in, Supabase may keep authentication data in browser storage. The website also uses a local session key to restore the account view and secure navigation. This storage is functional and is not advertising cookies.", "preferencesTitle": "Language and request flow", "preferencesText": "Your language preference may be stored locally so public pages and your account can follow the same choice. The chat may temporarily store a request ID in sessionStorage to prevent duplicate submissions.", "analyticsTitle": "Analytics and marketing", "analyticsText": "The website currently does not use analytics, advertising or marketing cookies. No non-essential tracking is claimed or placed.", "choicesTitle": "Your choices", "choicesText": "You can clear local browser storage through your browser settings. You can also block browser storage, but account, language or request features may then work less reliably.", "contactTitle": "Questions", "contactText": "For questions about this policy, contact" },
+  "legacyPrivacy": { "metaTitle": "Privacy Policy | Ster Schoonmaak", "metaDescription": "How Ster Schoonmaak handles data for contact, quotes, accounts and support.", "breadcrumb": "Privacy Policy", "title": "Privacy Policy", "intro": "This page provides a localized summary of how Ster Schoonmaak processes data when you use the website.", "receivedTitle": "Information you may share", "receivedText": "Depending on how you use the website, you may share your name, email address, phone number, location, request details, complaint information or account information. Chat and request details are processed when you choose to provide them.", "useTitle": "How we use information", "useText": "We use information to handle questions, quote requests and complaints, secure accounts, provide support and send necessary transactional emails where applicable.", "providersTitle": "Service providers", "providersText": "The website uses Firebase Hosting, Supabase for authentication and related data services, Cloudflare Worker for secure request processing, Google OAuth for sign-in and WhatsApp when you choose to continue there. These providers process data under their own terms.", "rightsTitle": "Your rights", "rightsText": "You can contact us about information connected with your interaction with Ster Schoonmaak and, where provided by law, request access, correction or deletion.", "contactTitle": "Contact", "contactText": "For privacy questions, contact" },
+  "foundation": { "eyebrow": "Ster Schoonmaak", "title": "Professional cleaning in Ghent and surrounding areas.", "description": "Explore our cleaning services for homes and businesses.", "switchLocale": "View the Dutch version", "currentLocale": "Current language: {locale}" },
   "common": {
     "skipToContent": "Skip to content"
   },
@@ -583,41 +582,6 @@
       "move": "Move cleaning",
       "airbnb": "Airbnb cleaning",
       "staircase": "Staircase cleaning"
-    }
-  },
-  "routeShell": {
-    "eyebrow": "Phase 1 · Route shell",
-    "services": {
-      "title": "Services",
-      "description": "This route is prepared. Content will be added in a later phase."
-    },
-    "business": {
-      "title": "Business Cleaning",
-      "description": "This route is prepared. Content will be added in a later phase."
-    },
-    "serviceArea": {
-      "title": "Service Area",
-      "description": "This route is prepared. Content will be added in a later phase."
-    },
-    "about": {
-      "title": "About",
-      "description": "This route is prepared. Content will be added in a later phase."
-    },
-    "contact": {
-      "title": "Contact",
-      "description": "This route is prepared. Content will be added in a later phase."
-    },
-    "quote": {
-      "title": "Request a Free Quote",
-      "description": "This route is prepared. The quotation flow will be added in a later phase."
-    },
-    "privacy": {
-      "title": "Privacy Policy",
-      "description": "This route is prepared. The privacy policy will be added in a later phase."
-    },
-    "cookies": {
-      "title": "Cookie Policy",
-      "description": "This route is prepared. The cookie policy will be added in a later phase."
     }
   }
 }

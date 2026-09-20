@@ -27,7 +27,7 @@
     "setPassword": "Wachtwoord instellen",
     "account": "Mijn account",
     "accountTitle": "Mijn account",
-    "accountDescription": "Beheer uw normale Ster Schoonmaak-account.",
+    "accountDescription": "Beheer uw Ster Schoonmaak-account.",
     "authenticationProvider": "Aanmeldmethode",
     "language": "Taal",
     "logout": "Uitloggen",
@@ -505,13 +505,20 @@
       }
     }
   },
-  "foundation": {
-    "eyebrow": "Fase 0 · Fundament",
-    "title": "Een helder fundament voor Ster Schoonmaak.",
-    "description": "De meertalige technische basis staat klaar. De commerciële pagina's volgen in een volgende fase.",
-    "switchLocale": "Bekijk de Engelse versie",
-    "currentLocale": "Huidige taal: {locale}"
+  "serviceAreaPage": {
+    "metaTitle": "Werkgebied Gent en omgeving | Ster Schoonmaak",
+    "metaDescription": "Professionele schoonmaak in Gent en omgeving. Ontdek hoe Ster Schoonmaak uw locatie en planning bekijkt.",
+    "breadcrumb": "Werkgebied", "heroEyebrow": "Gent en omgeving", "heroTitle": "Professionele schoonmaak in Gent en omgeving.", "heroDescription": "Ster Schoonmaak werkt vanuit Gent voor woningen en bedrijven. We bekijken opdrachten in Gent en omliggende gebieden binnen ongeveer 30 km, afhankelijk van locatie en planning.", "quoteCta": "Vrijblijvende offerte aanvragen", "contactCta": "Neem contact op", "visualEyebrow": "Lokaal en praktisch", "visualTitle": "Gent als uitvalsbasis.", "visualDescription": "Ons werkgebied is ongeveer {radius} km rond Gent. De haalbaarheid wordt per opdracht en planning bevestigd.", "whereEyebrow": "Waar we werken", "whereTitle": "Een duidelijke regio, met ruimte voor overleg.", "whereDescription": "De afstand is een eerste richtlijn. We bevestigen altijd of een opdracht past bij de locatie, de scope en de beschikbare planning.", "where": { "base": { "title": "Gent", "description": "Ster Schoonmaak is actief vanuit Gent en omgeving." }, "radius": { "title": "Ongeveer 30 km", "description": "We bekijken locaties binnen ongeveer {radius} km rond Gent." }, "planning": { "title": "Per opdracht bekeken", "description": "Beschikbaarheid hangt af van locatie, opdracht en planning." } }, "customersEyebrow": "Voor woningen en bedrijven", "customersTitle": "Schoonmaak die past bij de plek.", "customers": { "homes": { "title": "Woningen", "description": "Eenmalige of terugkerende schoonmaak voor woningen en appartementen volgens duidelijke afspraken." }, "businesses": { "title": "Bedrijven", "description": "Kantoren, handelszaken, horeca, scholen en andere professionele ruimtes binnen de afgesproken scope." } }, "availabilityEyebrow": "Beschikbaarheid bevestigen", "availabilityTitle": "Zo weet u waar u aan toe bent.", "availabilityDescription": "We beloven niet automatisch elke locatie binnen een straal. We nemen uw vraag door en bespreken wat praktisch haalbaar is.", "availability": { "request": { "title": "Bezorg uw adres", "description": "Vermeld uw stad of postcode samen met de belangrijkste details van de opdracht." }, "review": { "title": "We bekijken de haalbaarheid", "description": "We beoordelen locatie, scope en gewenste timing volgens de beschikbare planning." }, "visit": { "title": "Plaatsbezoek wanneer nodig", "description": "Als dat helpt om de opdracht goed in te schatten, kan een plaatsbezoek worden afgesproken." } }, "finalEyebrow": "Uw locatie bespreken", "finalTitle": "Twijfelt u of uw adres binnen het werkgebied valt?", "finalDescription": "Stuur uw stad of postcode mee. We bekijken samen wat mogelijk is.", "whatsappMessage": "Hallo Ster Schoonmaak, ik wil graag weten of mijn locatie binnen jullie werkgebied valt."
   },
+  "aboutPage": {
+    "metaTitle": "Over Ster Schoonmaak | Schoonmaak in Gent", "metaDescription": "Maak kennis met Ster Schoonmaak: professionele, punctuele en betrouwbare schoonmaak voor woningen en bedrijven in Gent en omgeving.", "breadcrumb": "Over ons", "heroEyebrow": "Over Ster Schoonmaak", "heroTitle": "Schoonmaak met duidelijke afspraken.", "heroDescription": "Ster Schoonmaak helpt woningen en bedrijven in Gent en omgeving met professionele schoonmaak, passend materiaal en een praktische aanpak.", "heroImageAlt": "Een medewerker reinigt glas met professioneel materiaal.", "heroImageCaption": "Professioneel materiaal voor een zorgvuldige uitvoering.", "quoteCta": "Vrijblijvende offerte aanvragen", "whoEyebrow": "Wie we zijn", "whoTitle": "Professioneel, punctueel en betrouwbaar.", "whoParagraphOne": "Ster Schoonmaak staat voor een nette uitvoering en heldere communicatie. We bespreken vooraf wat er nodig is, welke ruimtes binnen de opdracht vallen en welke planning haalbaar is.", "whoParagraphTwo": "Van een woning tot een kantoor of commerciële ruimte: de aanpak wordt afgestemd op de locatie en de afgesproken taken. Zo blijven verwachtingen en resultaat duidelijk.", "workEyebrow": "Hoe we werken", "workTitle": "Van vraag naar een concrete opdracht.", "workDescription": "Een goede schoonmaak begint met aandacht voor de ruimte, de toegang en de praktische context.", "work": { "scope": { "title": "We luisteren", "description": "We brengen uw ruimtes, taken en aandachtspunten helder in kaart." }, "communicate": { "title": "We stemmen af", "description": "Timing, toegang, materiaal en verwachtingen worden praktisch besproken." }, "deliver": { "title": "We voeren uit", "description": "We werken zorgvuldig binnen de afgesproken scope en planning." } }, "expectEyebrow": "Wat u mag verwachten", "expectTitle": "Een aanpak die helder blijft.", "expect": { "homes": { "title": "Woningen en bedrijven", "description": "Schoonmaak voor particuliere en professionele ruimtes in Gent en omgeving." }, "businesses": { "title": "Flexibele service", "description": "Eenmalige en terugkerende opdrachten kunnen worden besproken." }, "equipment": { "title": "Professioneel materiaal", "description": "Materiaal wordt afgestemd op de afgesproken ruimtes en taken." }, "area": { "title": "Duidelijk werkgebied", "description": "We bekijken opdrachten vanuit Gent en omgeving, ongeveer 30 km afhankelijk van planning." } }, "finalEyebrow": "Samen bekijken", "finalTitle": "Vertel ons wat uw ruimte nodig heeft.", "finalDescription": "We bespreken de opdracht, de praktische afspraken en een passende volgende stap.", "contactCta": "Neem contact op"
+  },
+  "quotePage": {
+    "metaTitle": "Vrijblijvende offerte | Ster Schoonmaak", "metaDescription": "Vraag een vrijblijvende offerte aan voor professionele schoonmaak in Gent en omgeving.", "breadcrumb": "Vrijblijvende offerte", "heroEyebrow": "Uw schoonmaakvraag", "heroTitle": "Vraag een vrijblijvende offerte aan.", "heroDescription": "Bezorg ons de belangrijkste details. We bekijken de opdracht, de locatie en de planning en nemen daarna contact met u op.", "asideEyebrow": "Wat gebeurt er daarna?", "asideTitle": "Een duidelijke volgende stap.", "asideDescription": "Uw aanvraag wordt veilig doorgestuurd naar Ster Schoonmaak via onze bestaande aanvraagflow.", "asidePoints": { "scope": "We bekijken de gewenste schoonmaak.", "location": "We controleren locatie en haalbaarheid.", "followUp": "We bespreken planning en eventuele plaatsbezoek." }, "name": "Naam", "email": "E-mailadres", "phone": "Telefoonnummer", "service": "Type schoonmaak", "servicePlaceholder": "Kies een dienst", "location": "Stad of postcode", "locationPlaceholder": "Bijvoorbeeld Gent of 9000", "frequency": "Frequentie", "preferredTime": "Gewenste timing (optioneel)", "preferredTimePlaceholder": "Bijvoorbeeld overdag of na de openingsuren", "message": "Uw vraag", "messagePlaceholder": "Vertel kort welke ruimtes of taken u wilt bespreken.", "frequencies": { "one_time": "Eenmalig", "daily": "Dagelijks", "several_per_week": "Meerdere keren per week", "weekly": "Wekelijks", "recurring_custom": "Terugkerend volgens afspraak", "not_sure": "Nog niet zeker" }, "submit": "Offerte aanvragen", "sending": "Aanvraag versturen…", "submitError": "Uw aanvraag kon niet worden verstuurd. Uw ingevulde gegevens zijn behouden; probeer het opnieuw.", "privacyNote": "Door te versturen gebruikt Ster Schoonmaak uw gegevens om uw aanvraag te behandelen.", "contactFallback": "Liever rechtstreeks contact?", "whatsappMessage": "Hallo Ster Schoonmaak, ik wil graag een vrijblijvende offerte aanvragen.", "successEyebrow": "Aanvraag ontvangen", "successTitle": "Bedankt voor uw aanvraag.", "successDescription": "Uw aanvraag is opgeslagen. Uw referentie is {reference}. We nemen de details verder met u door.", "continueWhatsApp": "Verder via WhatsApp", "newRequest": "Nieuwe aanvraag", "validation": { "name": "Vul uw naam in.", "email": "Vul een geldig e-mailadres in.", "phone": "Vul een geldig telefoonnummer in.", "service": "Kies een type schoonmaak.", "location": "Vul een stad of postcode in.", "message": "Beschrijf kort uw schoonmaakvraag." }
+  },
+  "cookiePolicy": { "metaTitle": "Cookiebeleid | Ster Schoonmaak", "metaDescription": "Informatie over cookies en browseropslag op de website van Ster Schoonmaak.", "breadcrumb": "Cookiebeleid", "title": "Cookiebeleid", "intro": "Dit cookiebeleid legt uit welke browseropslag deze website gebruikt en welke keuzes u hebt.", "necessaryTitle": "Noodzakelijke opslag", "necessaryText": "De website gebruikt browseropslag voor noodzakelijke functies zoals het bewaren van uw ingelogde Supabase-authenticatiesessie en het veilig afhandelen van een OAuth-terugkeer. Zonder deze opslag werken accountfuncties mogelijk niet correct.", "authTitle": "Account en authenticatie", "authText": "Wanneer u inlogt, kan Supabase authenticatiegegevens in browseropslag bewaren. De website gebruikt ook een lokale sessiesleutel om de accountweergave en beveiligde navigatie te herstellen. Deze opslag is functioneel en geen advertentiecookies.", "preferencesTitle": "Taal en aanvraagflow", "preferencesText": "Uw taalvoorkeur kan lokaal worden bewaard zodat publieke pagina's en uw account dezelfde taalkeuze kunnen volgen. De chat kan tijdelijk een aanvraag-ID in sessionStorage bewaren om dubbele verzending te voorkomen.", "analyticsTitle": "Analyse en marketing", "analyticsText": "Op dit moment gebruikt de website geen analytics-, advertentie- of marketingcookies. Er wordt geen niet-essentiële tracking geclaimd of geplaatst.", "choicesTitle": "Uw keuzes", "choicesText": "U kunt lokale browseropslag wissen via de instellingen van uw browser. U kunt ook browseropslag blokkeren, maar dan kunnen account-, taal- of aanvraagfuncties minder goed werken.", "contactTitle": "Vragen", "contactText": "Neem voor vragen over dit beleid contact op met" },
+  "legacyPrivacy": { "metaTitle": "Privacybeleid | Ster Schoonmaak", "metaDescription": "Hoe Ster Schoonmaak omgaat met gegevens voor contact, offertes, accounts en ondersteuning.", "breadcrumb": "Privacybeleid", "title": "Privacybeleid", "intro": "Deze pagina geeft een Nederlandstalige samenvatting van hoe Ster Schoonmaak gegevens verwerkt wanneer u de website gebruikt.", "receivedTitle": "Welke gegevens u kunt delen", "receivedText": "Afhankelijk van uw gebruik kunt u uw naam, e-mailadres, telefoonnummer, locatie, aanvraagdetails, klachtgegevens of accountinformatie delen. Chat- en aanvraaggegevens worden alleen verwerkt wanneer u ervoor kiest die in te vullen.", "useTitle": "Waarvoor we gegevens gebruiken", "useText": "We gebruiken gegevens om vragen, offerteaanvragen en klachten te behandelen, accounts te beveiligen, ondersteuning te bieden en noodzakelijke transactionele e-mails te versturen wanneer dat van toepassing is.", "providersTitle": "Dienstverleners", "providersText": "De website gebruikt Firebase Hosting, Supabase voor authenticatie en gerelateerde gegevensdiensten, Cloudflare Worker voor beveiligde aanvraagverwerking, Google OAuth voor aanmelden en WhatsApp wanneer u daar zelf voor kiest. Deze partijen verwerken gegevens volgens hun eigen voorwaarden.", "rightsTitle": "Uw rechten", "rightsText": "U kunt contact opnemen over gegevens die met uw interactie met Ster Schoonmaak verband houden en, waar de wet dat voorziet, vragen om inzage, correctie of verwijdering.", "contactTitle": "Contact", "contactText": "Voor privacyvragen kunt u contact opnemen met" },
+  "foundation": { "eyebrow": "Ster Schoonmaak", "title": "Professionele schoonmaak in Gent en omgeving.", "description": "Ontdek onze schoonmaakdiensten voor woningen en bedrijven.", "switchLocale": "Bekijk de Engelse versie", "currentLocale": "Huidige taal: {locale}" },
   "common": {
     "skipToContent": "Ga naar de inhoud"
   },
@@ -590,41 +597,6 @@
       "move": "Verhuisschoonmaak",
       "airbnb": "Airbnb-schoonmaak",
       "staircase": "Trappenhal schoonmaken"
-    }
-  },
-  "routeShell": {
-    "eyebrow": "Fase 1 · Route in voorbereiding",
-    "services": {
-      "title": "Diensten",
-      "description": "Deze route is voorbereid. De inhoud volgt in een volgende fase."
-    },
-    "business": {
-      "title": "Zakelijke schoonmaak",
-      "description": "Deze route is voorbereid. De inhoud volgt in een volgende fase."
-    },
-    "serviceArea": {
-      "title": "Werkgebied",
-      "description": "Deze route is voorbereid. De inhoud volgt in een volgende fase."
-    },
-    "about": {
-      "title": "Over ons",
-      "description": "Deze route is voorbereid. De inhoud volgt in een volgende fase."
-    },
-    "contact": {
-      "title": "Contact",
-      "description": "Deze route is voorbereid. De inhoud volgt in een volgende fase."
-    },
-    "quote": {
-      "title": "Vrijblijvende offerte",
-      "description": "Deze route is voorbereid. De offerteflow volgt in een volgende fase."
-    },
-    "privacy": {
-      "title": "Privacybeleid",
-      "description": "Deze route is voorbereid. Het privacybeleid volgt in een volgende fase."
-    },
-    "cookies": {
-      "title": "Cookiebeleid",
-      "description": "Deze route is voorbereid. Het cookiebeleid volgt in een volgende fase."
     }
   }
 }

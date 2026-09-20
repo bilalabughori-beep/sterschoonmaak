@@ -2,6 +2,8 @@ import type { NormalizedLead } from "./types";
 import { FREQUENCIES, InputError, isFrequency, isRecord, isServiceId } from "./validation";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^[+0-9()[\]\s.-]{7,40}$/;
 
 function normalizedString(value: unknown, max: number, field: string): string | null {
   if (value === undefined || value === null || value === "") return null;
@@ -35,7 +37,13 @@ export function parseLeadRequest(value: unknown): NormalizedLead {
   if (!city && !postalCode) throw new InputError("A city or postal code is required.");
 
   const preferredTime = normalizedString(lead.preferredTime, 200, "Preferred time");
-  const details = normalizedString(lead.details, 1000, "Details");
+  const details = normalizedString(lead.details, 700, "Details");
+  const email = normalizedString(lead.email, 320, "Email");
+  const phone = normalizedString(lead.phone, 40, "Phone");
+  if (email && !EMAIL_PATTERN.test(email)) throw new InputError("Email is invalid.");
+  if (phone && !PHONE_PATTERN.test(phone)) throw new InputError("Phone is invalid.");
+  const combinedDetails = [details, email ? `Email: ${email}` : null, phone ? `Phone: ${phone}` : null].filter(Boolean).join("\n") || null;
+  if (combinedDetails && combinedDetails.length > 1000) throw new InputError("Details are too long.");
   const name = requiredString(lead.name, 100, "Name");
   const sourcePath = normalizedString(value.sourcePath, 300, "Source path");
   if (sourcePath && (!sourcePath.startsWith("/") || /[?#\\\u0000-\u001f]/.test(sourcePath))) {
@@ -50,7 +58,7 @@ export function parseLeadRequest(value: unknown): NormalizedLead {
     postalCode,
     frequency: lead.frequency,
     preferredTime,
-    details,
+    details: combinedDetails,
     name,
     sourcePath,
   };

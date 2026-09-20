@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import { chatApiUrl, sendChatRequest, sendLeadRequest } from "./chat-api";
 import { currentSourcePath, getClientRequestId } from "./chat-session";
 import type { ChatAction, ChatResponse, ChatState, LeadResponse, QuickReply } from "./chat-types";
@@ -24,6 +25,7 @@ const initialState: ChatState = {
 export function ChatWidget() {
   const t = useTranslations("chat");
   const locale = useLocale();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<ChatState>(initialState);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -147,6 +149,8 @@ export function ChatWidget() {
       void submit({ message: value, displayText });
     }
   };
+
+  if (pathname === "/offerte") return null;
 
   return (
     <div className="fixed bottom-5 right-5 z-[55] sm:bottom-7 sm:right-7">
