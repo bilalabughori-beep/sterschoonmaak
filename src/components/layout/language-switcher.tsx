@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 
 const locales: Array<{ code: SupportedLocale; label: string }> = [
   { code: "nl-BE", label: "NL" },
-  { code: "en-BE", label: "EN" },
+  { code: "en-BE", label: "English" },
 ];
 
 export function LanguageSwitcher() {
