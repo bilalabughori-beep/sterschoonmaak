@@ -144,7 +144,7 @@ async function sendReplyEmail(env: Env, complaint: Record<string, unknown>, repl
   const subjectHtml = escapeHtml(subjectValue);
   const bodyValue = String(reply.body ?? "");
   const bodyHtml = escapeHtml(bodyValue).replace(/\n/g, "<br>");
-  const subject = isEnglish ? `Reply to your complaint – ${referenceValue}` : `Antwoord op uw klacht – ${referenceValue}`;
+  const subject = `Re: ${subjectValue} – ${referenceValue}`;
   const html = isEnglish
     ? `<p>Hello ${name},</p><p>We have replied to your complaint.</p><p><strong>Reference:</strong><br>${referenceHtml}<br><strong>Subject:</strong><br>${subjectHtml}</p><p>${bodyHtml}</p><p>Kind regards,<br>Ster Schoonmaak<br><a href="mailto:info@sterschoonmaak.be">info@sterschoonmaak.be</a></p>`
     : `<p>Beste ${name},</p><p>We hebben geantwoord op uw klacht.</p><p><strong>Referentie:</strong><br>${referenceHtml}<br><strong>Onderwerp:</strong><br>${subjectHtml}</p><p>${bodyHtml}</p><p>Met vriendelijke groet,<br>Ster Schoonmaak<br><a href="mailto:info@sterschoonmaak.be">info@sterschoonmaak.be</a></p>`;
