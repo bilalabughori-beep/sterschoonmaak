@@ -5,7 +5,7 @@ import { createOrGetLead, SupabaseStorageError } from "./supabase";
 import type { ChatRequest, Env } from "./types";
 import { InputError, parseRequest } from "./validation";
 import { buildWhatsAppHandoff } from "./whatsapp";
-import { createComplaint, createCustomerComplaint, customerComplaintDetails, complaintDetails, listComplaints, listCustomerComplaints, retryComplaintEmail, sendComplaintEmail, updateComplaint } from "./complaints";
+import { createComplaint, createComplaintReply, createCustomerComplaint, customerComplaintDetails, complaintDetails, listComplaints, listCustomerComplaints, retryComplaintEmail, retryComplaintReply, sendComplaintEmail, updateComplaint } from "./complaints";
 import { createOffer, listOffers, publicOffers, updateOffer, uploadOfferImage } from "./offers";
 
 const SERVICE_NAME = "ster-schoonmaak-chatbot";
@@ -64,6 +64,8 @@ const worker = {
       try {
         const segments = url.pathname.split("/").filter(Boolean);
         if (request.method === "GET" && segments[1] === "complaints" && !segments[2]) return json(await listComplaints(request, env), 200, request, env);
+        if (request.method === "POST" && segments[1] === "complaints" && segments[2] && segments[3] === "replies" && !segments[4]) return json(await createComplaintReply(request, env, segments[2], await requestJson(request, 8_000)), 201, request, env);
+        if (request.method === "POST" && segments[1] === "complaints" && segments[2] && segments[3] === "replies" && segments[4] && segments[5] === "retry") return json(await retryComplaintReply(request, env, segments[2], segments[4]), 200, request, env);
         if (request.method === "GET" && segments[1] === "complaints" && segments[2]) return json(await complaintDetails(request, env, segments[2]), 200, request, env);
         if (request.method === "PATCH" && segments[1] === "complaints" && segments[2]) return json(await updateComplaint(request, env, segments[2], await requestJson(request, 8_000)), 200, request, env);
         if (request.method === "POST" && segments[1] === "complaints" && segments[2] === "retry-email") return json(await retryComplaintEmail(request, env, segments[2]), 200, request, env);

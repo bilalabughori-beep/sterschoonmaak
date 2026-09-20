@@ -36,6 +36,8 @@ export async function createComplaint(env: Env, value: unknown, locale: string, 
 }
 
 const customerComplaintFields = "id,reference,created_at,subject,message,status,locale,email_status";
+const staffReplyFields = "id,complaint_id,author_user_id,author_role,body,email_status,email_attempts,email_sent_at,email_last_error,resend_message_id,created_at";
+const customerReplyFields = "id,body,email_status,created_at";
 
 function exactEmailPattern(email: string) {
   return email.replace(/[\\%_]/g, (character) => `\\${character}`);
@@ -60,6 +62,12 @@ function safeCustomerComplaint(row: unknown) {
   };
 }
 
+function safeCustomerReply(row: unknown) {
+  if (!row || typeof row !== "object" || Array.isArray(row)) return null;
+  const value = row as Record<string, unknown>;
+  return { id: value.id, body: value.body, email_status: value.email_status, created_at: value.created_at };
+}
+
 export async function listCustomerComplaints(request: Request, env: Env) {
   const user = await requireAuthenticatedUser(request, env);
   const rows = await supabaseQuery(env, "complaints", `?select=${customerComplaintFields}&${customerFilter(user.email)}&order=created_at.desc`);
@@ -71,7 +79,8 @@ export async function customerComplaintDetails(request: Request, env: Env, id: s
   const rows = await supabaseQuery(env, "complaints", `?select=${customerComplaintFields}&id=eq.${encodeURIComponent(id)}&${customerFilter(user.email)}&limit=1`);
   const complaint = Array.isArray(rows) ? safeCustomerComplaint(rows[0]) : null;
   if (!complaint) throw new InputError("Complaint not found.", 404);
-  return complaint;
+  const replies = await supabaseQuery(env, "complaint_replies", `?select=${customerReplyFields}&complaint_id=eq.${encodeURIComponent(id)}&email_status=eq.sent&order=created_at.asc`);
+  return { ...complaint, replies: (Array.isArray(replies) ? replies : []).map(safeCustomerReply).filter(Boolean) };
 }
 
 export async function createCustomerComplaint(request: Request, env: Env, value: unknown, locale: string, sourcePath?: string) {
@@ -106,7 +115,71 @@ export async function complaintDetails(request: Request, env: Env, id: string) {
   const rows = await supabaseQuery(env, "complaints", `?id=eq.${encodeURIComponent(id)}&select=*`);
   const row = Array.isArray(rows) ? rows[0] : null;
   if (!row) throw new InputError("Complaint not found.", 404);
-  return row;
+  const replies = await supabaseQuery(env, "complaint_replies", `?select=${staffReplyFields}&complaint_id=eq.${encodeURIComponent(id)}&order=created_at.asc`);
+  return { ...row, replies: Array.isArray(replies) ? replies : [] };
+}
+
+async function complaintForReply(env: Env, id: string) {
+  const rows = await supabaseQuery(env, "complaints", `?select=id,reference,customer_name,customer_email,subject,locale&id=eq.${encodeURIComponent(id)}&limit=1`);
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row || typeof row !== "object") throw new InputError("Complaint not found.", 404);
+  return row as Record<string, unknown>;
+}
+
+async function sendReplyEmail(env: Env, complaint: Record<string, unknown>, reply: Record<string, unknown>) {
+  const apiKey = env.RESEND_API_KEY?.trim();
+  const destination = String(complaint.customer_email ?? "").trim();
+  const attempts = Number(reply.email_attempts ?? 0) || 0;
+  await updateRow(env, "complaint_replies", String(reply.id), { email_status: "pending", email_attempts: attempts + 1, email_last_error: null });
+  if (!apiKey || !destination) {
+    await updateRow(env, "complaint_replies", String(reply.id), { email_status: "failed", email_last_error: "Customer reply email is not configured." });
+    return { ok: false };
+  }
+  const locale = complaint.locale === "en-BE" ? "en-BE" : "nl-BE";
+  const isEnglish = locale === "en-BE";
+  const name = escapeHtml(String(complaint.customer_name ?? ""));
+  const referenceValue = String(complaint.reference ?? "");
+  const referenceHtml = escapeHtml(referenceValue);
+  const subjectValue = String(complaint.subject ?? "");
+  const subjectHtml = escapeHtml(subjectValue);
+  const bodyValue = String(reply.body ?? "");
+  const bodyHtml = escapeHtml(bodyValue).replace(/\n/g, "<br>");
+  const subject = isEnglish ? `Reply to your complaint – ${referenceValue}` : `Antwoord op uw klacht – ${referenceValue}`;
+  const html = isEnglish
+    ? `<p>Hello ${name},</p><p>We have replied to your complaint.</p><p><strong>Reference:</strong><br>${referenceHtml}<br><strong>Subject:</strong><br>${subjectHtml}</p><p>${bodyHtml}</p><p>Kind regards,<br>Ster Schoonmaak<br><a href="mailto:info@sterschoonmaak.be">info@sterschoonmaak.be</a></p>`
+    : `<p>Beste ${name},</p><p>We hebben geantwoord op uw klacht.</p><p><strong>Referentie:</strong><br>${referenceHtml}<br><strong>Onderwerp:</strong><br>${subjectHtml}</p><p>${bodyHtml}</p><p>Met vriendelijke groet,<br>Ster Schoonmaak<br><a href="mailto:info@sterschoonmaak.be">info@sterschoonmaak.be</a></p>`;
+  const text = isEnglish
+    ? `Hello ${String(complaint.customer_name ?? "")},\n\nWe have replied to your complaint.\n\nReference: ${referenceValue}\nSubject: ${subjectValue}\n\n${bodyValue}\n\nKind regards,\nSter Schoonmaak\ninfo@sterschoonmaak.be`
+    : `Beste ${String(complaint.customer_name ?? "")},\n\nWe hebben geantwoord op uw klacht.\n\nReferentie: ${referenceValue}\nOnderwerp: ${subjectValue}\n\n${bodyValue}\n\nMet vriendelijke groet,\nSter Schoonmaak\ninfo@sterschoonmaak.be`;
+  const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" }, body: JSON.stringify({ from: env.COMPLAINT_EMAIL_FROM?.trim() || "Ster Schoonmaak <info@sterschoonmaak.be>", to: [destination], reply_to: env.COMPLAINT_EMAIL_REPLY_TO?.trim() || "info@sterschoonmaak.be", subject, html, text }) });
+  const providerBody = await response.json().catch(() => null) as { id?: unknown } | null;
+  if (!response.ok) { await updateRow(env, "complaint_replies", String(reply.id), { email_status: "failed", email_last_error: `Email provider returned ${response.status}.` }); return { ok: false }; }
+  await updateRow(env, "complaint_replies", String(reply.id), { email_status: "sent", email_sent_at: new Date().toISOString(), email_last_error: null, resend_message_id: typeof providerBody?.id === "string" ? providerBody.id : null });
+  return { ok: true };
+}
+
+export async function createComplaintReply(request: Request, env: Env, complaintId: string, value: unknown) {
+  const user = await requireRole(request, env, ["client_admin", "site_owner"]);
+  if (!isRecord(value)) throw new InputError("Request body must be an object.");
+  const body = requiredText(value.body, 5000, "Reply");
+  const complaint = await complaintForReply(env, complaintId);
+  const result = await supabaseQuery(env, "complaint_replies", "", { method: "POST", body: JSON.stringify({ complaint_id: complaintId, author_user_id: user.id, author_role: user.app_metadata?.role, body }) });
+  const reply = Array.isArray(result) ? result[0] : null;
+  if (!reply || typeof reply !== "object") throw new Error("Reply was not stored.");
+  await sendReplyEmail(env, complaint, reply as Record<string, unknown>);
+  const rows = await supabaseQuery(env, "complaint_replies", `?select=${staffReplyFields}&id=eq.${encodeURIComponent(String((reply as Record<string, unknown>).id))}&limit=1`);
+  return Array.isArray(rows) ? rows[0] : reply;
+}
+
+export async function retryComplaintReply(request: Request, env: Env, complaintId: string, replyId: string) {
+  await requireRole(request, env, ["client_admin", "site_owner"]);
+  const complaint = await complaintForReply(env, complaintId);
+  const rows = await supabaseQuery(env, "complaint_replies", `?select=${staffReplyFields}&id=eq.${encodeURIComponent(replyId)}&complaint_id=eq.${encodeURIComponent(complaintId)}&limit=1`);
+  const reply = Array.isArray(rows) ? rows[0] : null;
+  if (!reply || typeof reply !== "object") throw new InputError("Reply not found.", 404);
+  await sendReplyEmail(env, complaint, reply as Record<string, unknown>);
+  const updated = await supabaseQuery(env, "complaint_replies", `?select=${staffReplyFields}&id=eq.${encodeURIComponent(replyId)}&limit=1`);
+  return Array.isArray(updated) ? updated[0] : reply;
 }
 
 export async function updateComplaint(request: Request, env: Env, id: string, value: unknown) {
