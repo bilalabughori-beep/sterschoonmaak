@@ -49,9 +49,9 @@ export const siteConfig: SiteConfig = {
     approximate: true,
   },
   contact: {
-    phoneDisplay: "+32 465 84 09 58",
-    phone: "+32465840958",
-    whatsapp: "+321040995981",
+    phoneDisplay: "+32 10 409 95 981",
+    phone: "+321040995981",
+    whatsapp: "+32471795061",
     email: "info@sterschoonmaak.be",
   },
   social: {
