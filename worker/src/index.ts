@@ -5,7 +5,7 @@ import { createOrGetLead, SupabaseStorageError } from "./supabase";
 import type { ChatRequest, Env } from "./types";
 import { InputError, parseRequest } from "./validation";
 import { buildWhatsAppHandoff } from "./whatsapp";
-import { createComplaint, complaintDetails, listComplaints, retryComplaintEmail, sendComplaintEmail, updateComplaint } from "./complaints";
+import { createComplaint, createCustomerComplaint, customerComplaintDetails, complaintDetails, listComplaints, listCustomerComplaints, retryComplaintEmail, sendComplaintEmail, updateComplaint } from "./complaints";
 import { createOffer, listOffers, publicOffers, updateOffer, uploadOfferImage } from "./offers";
 
 const SERVICE_NAME = "ster-schoonmaak-chatbot";
@@ -43,6 +43,21 @@ const worker = {
         const email = await sendComplaintEmail(env, complaint);
         return json({ ok: true, reference: complaint.reference, createdAt: complaint.created_at, emailStatus: email.ok ? "sent" : "failed" }, 201, request, env);
       } catch (error) { return handleError(error, request, env); }
+    }
+    if (url.pathname === "/account/complaints" && request.method === "GET") {
+      if (!isAllowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403, request, env);
+      try { return json(await listCustomerComplaints(request, env), 200, request, env); } catch (error) { return handleError(error, request, env); }
+    }
+    if (url.pathname === "/account/complaints" && request.method === "POST") {
+      if (!isAllowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403, request, env);
+      try {
+        const result = await createCustomerComplaint(request, env, await requestJson(request, 12_000), url.searchParams.get("locale") ?? request.headers.get("x-site-locale") ?? "nl-BE", url.searchParams.get("sourcePath") ?? undefined);
+        return json(result, 201, request, env);
+      } catch (error) { return handleError(error, request, env); }
+    }
+    if (url.pathname.startsWith("/account/complaints/") && request.method === "GET") {
+      if (!isAllowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403, request, env);
+      try { return json(await customerComplaintDetails(request, env, decodeURIComponent(url.pathname.split("/").filter(Boolean)[2] ?? "")), 200, request, env); } catch (error) { return handleError(error, request, env); }
     }
     if (url.pathname.startsWith("/admin/")) {
       if (!isAllowedOrigin(request, env)) return json({ error: "Origin not allowed." }, 403, request, env);

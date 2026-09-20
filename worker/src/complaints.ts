@@ -1,4 +1,4 @@
-import { requireRole, nullableText, requiredText } from "./admin";
+import { requireAuthenticatedUser, requireRole, nullableText, requiredText, type AuthUser } from "./admin";
 import { supabaseQuery, updateRow } from "./backoffice-data";
 import type { ComplaintStatus, Env } from "./types";
 import { InputError, isRecord } from "./validation";
@@ -11,17 +11,17 @@ function reference() {
   return `SC-${new Date().getUTCFullYear()}-${Array.from(bytes, (byte) => byte.toString(36).padStart(2, "0")).join("").slice(0, 6).toUpperCase()}`;
 }
 
-function complaintPayload(value: unknown, locale: string, sourcePath?: string) {
+function complaintPayload(value: unknown, locale: string, sourcePath?: string, ownedEmail?: string, defaultName?: string) {
   if (!isRecord(value)) throw new InputError("Request body must be an object.");
   if (locale !== "nl-BE" && locale !== "en-BE") throw new InputError("Unsupported locale.");
-  const email = requiredText(value.customerEmail, 254, "Email").toLowerCase();
+  const email = (ownedEmail ?? requiredText(value.customerEmail, 254, "Email")).toLowerCase();
   if (!emailPattern.test(email)) throw new InputError("Email is invalid.");
   const path = nullableText(sourcePath ?? value.sourcePath, 300, "Source path");
   if (path && (!path.startsWith("/") || /[?#\\\u0000-\u001f]/.test(path))) throw new InputError("Source path is invalid.");
   const honeypot = nullableText(value.website, 100, "Website");
   if (honeypot) throw new InputError("Unable to submit this form.");
   return {
-    reference: reference(), locale, customer_name: requiredText(value.customerName, 100, "Name"), customer_email: email,
+    reference: reference(), locale, customer_name: requiredText(value.customerName ?? defaultName, 100, "Name"), customer_email: email,
     customer_phone: nullableText(value.customerPhone, 50, "Phone"), subject: requiredText(value.subject, 200, "Subject"),
     message: requiredText(value.message, 3000, "Message"), source_path: path,
   };
@@ -33,6 +33,61 @@ export async function createComplaint(env: Env, value: unknown, locale: string, 
   const row = Array.isArray(result) ? result[0] : null;
   if (!row || typeof row !== "object") throw new Error("Complaint was not stored.");
   return row as Record<string, unknown>;
+}
+
+const customerComplaintFields = "id,reference,created_at,subject,message,status,locale,email_status";
+
+function exactEmailPattern(email: string) {
+  return email.replace(/[\\%_]/g, (character) => `\\${character}`);
+}
+
+function customerFilter(email: string) {
+  return `customer_email=ilike.${encodeURIComponent(exactEmailPattern(email))}`;
+}
+
+function safeCustomerComplaint(row: unknown) {
+  if (!row || typeof row !== "object" || Array.isArray(row)) return null;
+  const value = row as Record<string, unknown>;
+  return {
+    id: value.id,
+    reference: value.reference,
+    created_at: value.created_at,
+    subject: value.subject,
+    message: value.message,
+    status: value.status,
+    locale: value.locale,
+    email_status: value.email_status,
+  };
+}
+
+export async function listCustomerComplaints(request: Request, env: Env) {
+  const user = await requireAuthenticatedUser(request, env);
+  const rows = await supabaseQuery(env, "complaints", `?select=${customerComplaintFields}&${customerFilter(user.email)}&order=created_at.desc`);
+  return { items: (Array.isArray(rows) ? rows : []).map(safeCustomerComplaint).filter(Boolean) };
+}
+
+export async function customerComplaintDetails(request: Request, env: Env, id: string) {
+  const user = await requireAuthenticatedUser(request, env);
+  const rows = await supabaseQuery(env, "complaints", `?select=${customerComplaintFields}&id=eq.${encodeURIComponent(id)}&${customerFilter(user.email)}&limit=1`);
+  const complaint = Array.isArray(rows) ? safeCustomerComplaint(rows[0]) : null;
+  if (!complaint) throw new InputError("Complaint not found.", 404);
+  return complaint;
+}
+
+export async function createCustomerComplaint(request: Request, env: Env, value: unknown, locale: string, sourcePath?: string) {
+  const user = await requireAuthenticatedUser(request, env);
+  const payload = complaintPayload(value, locale, sourcePath, user.email, customerName(user));
+  const result = await supabaseQuery(env, "complaints", "", { method: "POST", body: JSON.stringify(payload) });
+  const row = Array.isArray(result) ? result[0] : null;
+  if (!row || typeof row !== "object") throw new Error("Complaint was not stored.");
+  const email = await sendComplaintEmail(env, row as Record<string, unknown>);
+  return { ok: true, reference: String((row as Record<string, unknown>).reference ?? ""), createdAt: String((row as Record<string, unknown>).created_at ?? ""), status: String((row as Record<string, unknown>).status ?? "new"), emailStatus: email.ok ? "sent" : "failed" };
+}
+
+function customerName(user: AuthUser) {
+  const metadata = user.user_metadata ?? {};
+  const value = metadata.display_name ?? metadata.full_name ?? metadata.name;
+  return typeof value === "string" ? value.trim() : "";
 }
 
 export async function listComplaints(request: Request, env: Env) {

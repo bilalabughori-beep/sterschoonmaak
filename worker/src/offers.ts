@@ -83,9 +83,20 @@ export async function uploadOfferImage(request: Request, env: Env) {
   if (!allowed.includes(contentType)) throw new InputError("Only JPEG, PNG, and WebP images are allowed.");
   const length = Number(request.headers.get("content-length") ?? 0); if (length > 2_097_152) throw new InputError("Image is too large.", 413);
   const bytes = await request.arrayBuffer(); if (bytes.byteLength > 2_097_152) throw new InputError("Image is too large.", 413);
+  if (!matchesImageSignature(bytes, contentType)) throw new InputError("The uploaded file does not match its image type.");
   const { baseUrl, key } = (() => { const baseUrl = env.SUPABASE_URL?.replace(/\/+$/, ""); const key = env.SUPABASE_SECRET_KEY?.trim(); if (!baseUrl || !key) throw new InputError("Storage is not configured.", 503); return { baseUrl, key }; })();
   const extension = contentType === "image/jpeg" ? "jpg" : contentType.split("/")[1]; const objectPath = `${user.id}/${crypto.randomUUID()}.${extension}`;
   const response = await fetch(`${baseUrl}/storage/v1/object/offer-images/${objectPath}`, { method: "POST", headers: { apikey: key, authorization: `Bearer ${key}`, "content-type": contentType, "x-upsert": "false" }, body: bytes });
   if (!response.ok) throw new InputError("Image upload failed.", 503);
   return { path: `${baseUrl}/storage/v1/object/public/offer-images/${objectPath}` };
 }
+
+function matchesImageSignature(buffer: ArrayBuffer, contentType: string) {
+  const bytes = new Uint8Array(buffer);
+  if (contentType === "image/jpeg") return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  if (contentType === "image/png") return bytes.length >= 8 && bytes.slice(0, 8).every((value, index) => value === [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a][index]);
+  if (contentType === "image/webp") return bytes.length >= 12 && ascii(bytes.slice(0, 4)) === "RIFF" && ascii(bytes.slice(8, 12)) === "WEBP";
+  return false;
+}
+
+function ascii(bytes: Uint8Array) { return String.fromCharCode(...bytes); }
