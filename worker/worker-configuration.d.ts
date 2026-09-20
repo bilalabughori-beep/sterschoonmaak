@@ -6,7 +6,7 @@ interface __BaseEnv_Env {
 	ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,https://bilal-28cb6.web.app,https://sterschoonmaak.be,https://www.sterschoonmaak.be";
 	DEV_OBSERVABILITY: "true";
 	SUPABASE_URL: "https://uhdgbkmtlahcvokxbtbx.supabase.co";
-	WHATSAPP_TARGET_NUMBER: "32465840958";
+	WHATSAPP_TARGET_NUMBER: "321040995981";
 	PUBLIC_SITE_URL: "https://sterschoonmaak.be";
 	RESEND_FROM_EMAIL: "Ster Schoonmaak <info@sterschoonmaak.be>";
 }
